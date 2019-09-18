@@ -1,7 +1,7 @@
 #pragma once
 #include "stdint.h"
 
-#define UART0_BASE 0x10010000
+#define UART0_BASE 0x10013000
 #define UART1_BASE 0x10011000
 
 typedef enum UART_N {
@@ -14,10 +14,12 @@ typedef enum UART_N {
 #define serial_puts(str, len) uart_puts(str, len, UART0)
 #define serial_gets(str, len) uart_gets(str, len, UART0)
 
-void serial_init();
+#define serial_init() uart_init(UART0);
 
-void uart_putc(char c, UART_N uart);
-char uart_getc(UART_N uart);
+void uart_init(UART_N);
 
-void uart_puts(char* str, uint32_t len, UART_N uart);
-void uart_gets(char* str, uint32_t len, UART_N uart);
+void uart_putc(char, UART_N);
+char uart_getc(UART_N);
+
+void uart_puts(char*, uint32_t, UART_N);
+void uart_gets(char*, uint32_t, UART_N);

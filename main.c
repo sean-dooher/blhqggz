@@ -1,6 +1,7 @@
 #include "serial.h"
 
-void main()
+void
+main()
 {
     serial_init();
     while (1) {
