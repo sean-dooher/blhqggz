@@ -25,5 +25,8 @@ typedef __UINT32_TYPE__ uint32_t;
 #ifdef __UINT64_TYPE__
 typedef __UINT64_TYPE__ uint64_t;
 #endif
+#ifdef __SIZE_TYPE__
+typedef __SIZE_TYPE__ size_t;
+#endif
 
 #endif
