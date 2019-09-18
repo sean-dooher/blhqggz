@@ -1,6 +1,6 @@
 #include <alloca.h>
 
-#include "serial.h"
+#include "devices/serial.h"
 
 void
 main()
@@ -13,8 +13,10 @@ main()
         for (int i = 0; i < 512; i++) {
             serial_putc(buffer[i] = serial_getc());
 
-            if (buffer[i] == '\0' || buffer[i] == '\n')
+            if (buffer[i] == '\0' || buffer[i] == '\n') {
                 buffer[i] = '\0';
+                break;
+            }
         }
     }
 }

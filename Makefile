@@ -16,24 +16,23 @@ TARGET=$(BIN_DIR)/kernel.elf
 
 # Source files
 
-LIB_DIR = $(PWD)/lib/
+LIB_DIR = lib/
 
 C_SRCS = main.c \
-		 interrupts.c \
-		 serial.c
+		 interrupts.c
 
-HEADERS = serial.h \
-		  interrupts.h
+HEADERS = interrupts.h
 
 S_SRCS = start.s
 
 include lib/Makefile
+include devices/Makefile
+
 
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 CFLAGS = -I$(LIB_DIR) -Wall -O0 -mcmodel=medany -ffreestanding -lgcc -nostdinc -nostdlib -nostartfiles -g
 QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
-
 
 # Object files
 
@@ -48,10 +47,12 @@ $(OBJ_DIR)/%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJS) $(HEADERS)
+	echo "$(OBJS)"
+	echo "$(C_SRCS)"
 	$(LD) $(LD_FLAGS) $(OBJS) -o $(TARGET)
 
 $(BIN_DIR)/kernel.img: $(TARGET)
-	$(OBJCOPY) -O binary $(TARGET) kernel.img
+	$(OBJCOPY) -O binary $(TARGET) $(BIN_DIR)/kernel.img
 
 clean:
 	rm -rf build
