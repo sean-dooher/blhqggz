@@ -8,7 +8,7 @@
 .global _start
 _start:
     # set up interrupt vector
-    la      t0, interrupt_vector
+    la      t0, m_interrupt_vector
     csrw    mtvec, t0
 
     la      t0, s_interrupt_vector
@@ -41,10 +41,12 @@ _start:
   
 
     # set up privilege mode to return to (S = 1)
+    
+    # Create 
+    addi t1, zero, PRIV_S
+    slli t1, t1, MPP_OFFSET
+    
     csrr t0, mstatus
-
-    addi t1, zero, 1
-    slli t1, t1, 11
     or t0, t0, t1
 
     # set up address to jump to on switch to smode
@@ -65,13 +67,13 @@ proc_sleep:
     wfi
 
 .align 2
-interrupt_vector:
+m_interrupt_vector:
     DUMP_REGISTERS_INT
 
     mv      a0, sp
     csrr    a1, mcause
     csrr    a2, mepc
-    jal     ra, interrupt_handler
+    jal     ra, machine_interrupt_handler
 
     RESTORE_REGISTERS_INT
 
