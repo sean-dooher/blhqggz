@@ -27,6 +27,7 @@ C_SRCS = main.c \
 HEADERS = serial.h \
 		  stdint.h \
 		  interrupts.h \
+		  pmp.h \
 		  alloca.h
 
 S_SRCS = start.s
