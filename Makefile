@@ -6,11 +6,6 @@ GDB = $(CROSS_COMP)-gdb
 OBJCOPY = $(CROSS_COMP)-objcopy
 QEMU = qemu-system-riscv64
 
-# Tool Options
-LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
-CFLAGS = -Wall -O0 -mcmodel=medany -ffreestanding -lstdint -nostdinc -nostdlib -nostartfiles -g
-QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
-
 # Targets
 BUILD_DIR=build
 OBJ_DIR=$(BUILD_DIR)/obj
@@ -20,17 +15,25 @@ DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 TARGET=$(BIN_DIR)/kernel.elf
 
 # Source files
+
+LIB_DIR = $(PWD)/lib/
+
 C_SRCS = main.c \
 		 interrupts.c \
 		 serial.c
 
 HEADERS = serial.h \
-		  stdint.h \
-		  interrupts.h \
-		  pmp.h \
-		  alloca.h
+		  interrupts.h
 
 S_SRCS = start.s
+
+include lib/Makefile
+
+# Tool Options
+LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
+CFLAGS = -I$(LIB_DIR) -Wall -O0 -mcmodel=medany -ffreestanding -lgcc -nostdinc -nostdlib -nostartfiles -g
+QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
+
 
 # Object files
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "stdint.h"
+#include <stdint.h>
 
 #define UART0_BASE 0x10013000
 #define UART1_BASE 0x10011000

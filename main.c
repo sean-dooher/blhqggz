@@ -1,5 +1,6 @@
+#include <alloca.h>
+
 #include "serial.h"
-#include "alloca.h"
 
 void
 main()
