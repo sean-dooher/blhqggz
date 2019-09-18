@@ -50,13 +50,15 @@ uart_getc(UART_N uart)
 {
     uint32_t rx_data;
     while (((rx_data = UART_BASES[uart]->rxdata) & RX_EMPTY) != 0);
-    return (char) rx_data & 0xF;
+
+    char ret = (char) rx_data & 0xFF;
+    return ret == '\r' ? '\n' : ret;
 }
 
 void
 uart_puts(char* str, uint32_t len, UART_N uart)
 {
-    for (int i = 0; i < len && str[i] != '\0'; i++) {
+    for (int i = 0; i < len && str[i]; i++) {
         uart_putc(str[i], uart);
     }
 }
@@ -64,8 +66,14 @@ uart_puts(char* str, uint32_t len, UART_N uart)
 void
 uart_gets(char* str, uint32_t len, UART_N uart)
 {
-    for (int i = 0; i < len; i++) {
-        if((str[i] = uart_getc(uart)) == '\0')
+    int i;
+    for (i = 0; i < len; i++) {
+        if((str[i] = uart_getc(uart)) == '\0' || str[i] == '\r' || str[i] == '\n')
             break;
     }
+
+    if (i + 1 < len - 1)
+        str[i + 1] = '\0';
+    else
+        str[len - 1] = '\0';
 }
