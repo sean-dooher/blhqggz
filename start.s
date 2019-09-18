@@ -20,7 +20,7 @@ sd \reg, (\n << 3)(sp)
 lw \reg, (\n << 3)(sp)
 .endm
 
-.macro DUMP_REGISTERS
+.macro DUMP_REGISTERS_INT
 addi sp, sp, -CONTEXT_SIZE
 DUMP_REG ra, 0
 DUMP_REG a0, 1
@@ -40,7 +40,7 @@ DUMP_REG t5, 14
 DUMP_REG t6, 15
 .endm
 
-.macro RESTORE_REGISTERS
+.macro RESTORE_REGISTERS_INT
 RESTORE_REG ra, 0
 RESTORE_REG a0, 1
 RESTORE_REG a1, 2
@@ -121,27 +121,27 @@ proc_sleep:
 
 .align 2
 interrupt_vector:
-    DUMP_REGISTERS
+    DUMP_REGISTERS_INT
 
     mv      a0, sp
     csrr    a1, mcause
     csrr    a2, mepc
     jal     ra, interrupt_handler
 
-    RESTORE_REGISTERS
+    RESTORE_REGISTERS_INT
 
     mret
 
 .align 2
 s_interrupt_vector:
-    DUMP_REGISTERS
+    DUMP_REGISTERS_INT
 
     mv      a0, sp
     csrr    a1, scause
     csrr    a2, sepc
-    jal     ra, interrupt_handler
+    jal     ra, supervisor_interrupt_handler
 
-    RESTORE_REGISTERS
+    RESTORE_REGISTERS_INT
 
     sret
 
