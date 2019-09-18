@@ -9,12 +9,13 @@ QEMU = qemu-system-riscv64
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 CFLAGS = -Wall -O0 -mcmodel=medany -ffreestanding -lstdint -nostdinc -nostdlib -nostartfiles -g
-QEMU_FLAGS = -M sifive_u -display none -serial stdio
+QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
 
 # Targets
 BUILD_DIR=build
 OBJ_DIR=$(BUILD_DIR)/obj
 BIN_DIR=$(BUILD_DIR)/bin
+DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
 TARGET=$(BIN_DIR)/kernel.elf
 
@@ -25,14 +26,14 @@ C_SRCS = main.c \
 
 HEADERS = serial.h \
 		  stdint.h \
-		  interrupts.h
+		  interrupts.h \
+		  alloca.h
 
 S_SRCS = start.s
 
 # Object files
-OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
 
-DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
+OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
 
 all: $(TARGET)
 
