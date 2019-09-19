@@ -12,3 +12,6 @@ int strcmp(const char *str1, const char *str2);
 int strncmp(const char *str1, const char *str2, size_t n);
 
 void *memcpy(void *dst, const void *src, size_t n);
+
+char *reverse(char *str, size_t len);
+char *itoa(int val, char *str, int base);

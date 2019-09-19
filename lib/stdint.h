@@ -1,5 +1,4 @@
-#ifndef STDINT_H
-#define STDINT_H
+#pragma once
 
 #ifdef __INT8_TYPE__
 typedef __INT8_TYPE__ int8_t;
@@ -27,6 +26,4 @@ typedef __UINT64_TYPE__ uint64_t;
 #endif
 #ifdef __SIZE_TYPE__
 typedef __SIZE_TYPE__ size_t;
-#endif
-
 #endif

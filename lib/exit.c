@@ -1,9 +1,14 @@
+#include <string.h>
 #include "devices/test.h"
+#include "devices/serial.c"
+
 
 void
 poweroff(int exitcode)
 {
-    #ifdef TEST_LOG
-    #endif
+    char exit_buffer[32];
+    serial_puts("Power exit code: ");
+    serial_puts(itoa(exitcode, exit_buffer, 10));
+    serial_puts("\n");
     test_power_off(exitcode);
 }

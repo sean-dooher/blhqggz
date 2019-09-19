@@ -73,3 +73,48 @@ memcpy(void *dst, const void *src, size_t n)
 
     return dst;
 }
+
+char *
+reverse(char *str, size_t len)
+{
+    int half = len/2;
+    for (int i = 0; i < half; i++) {
+        char temp = str[i];
+        str[i] = str[half - 1 - i];
+        str[half - 1 - i] = temp;
+    }
+    return str;
+}
+
+char *
+itoa(int val, char *str, int base)
+{
+    int i = 0;
+
+    int neg = 0;
+
+    if (val == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+
+    if (val < 0 && base == 0) {
+        neg = 1;
+        val *= -1;
+    }
+
+    while (val > 0) {
+        int rem = val % base;
+        str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        val /= base;
+    }
+
+    if (neg)
+        str[i++] = '-';
+    str[i] = '\0';
+
+    reverse(str, i);
+
+    return str;
+}
