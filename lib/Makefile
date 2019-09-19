@@ -1,11 +1,13 @@
 EXPORT_LIB_HEADERS = alloca.h \
 					 stdint.h \
 					 pmp.h \
-					 string.h
+					 string.h \
+					 exit.h
 
-EXPORT_LIB_C_SRCS = string.c
+EXPORT_LIB_C_SRCS = string.c \
+					exit.c
 
-EXPORT_LIB_S_SRCS = asm/bootup.s\
+EXPORT_LIB_S_SRCS = asm/bootup.s \
 				    asm/switch.s
 
 HEADERS += $(addprefix lib/, $(EXPORT_LIB_HEADERS))

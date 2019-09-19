@@ -1,13 +1,14 @@
 #include "devices/serial.h"
+#include "exit.h"
 
 void
 main()
 {
     serial_init();
 
-    char buffer[512];
-    while (1)
+    while (1) 
     {
+        char buffer[512];
         for (int i = 0; i < 512; i++) {
             serial_putc(buffer[i] = serial_getc());
 
@@ -16,5 +17,6 @@ main()
                 break;
             }
         }
+        poweroff(0);
     }
 }

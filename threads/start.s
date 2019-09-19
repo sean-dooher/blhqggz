@@ -63,6 +63,9 @@ _start:
 s_mode_start:
     jal ra, main
 
+    addi a0, a0, 0
+    jal ra, poweroff
+
 proc_sleep:
     wfi
 

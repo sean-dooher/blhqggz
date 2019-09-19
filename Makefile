@@ -13,25 +13,26 @@ BIN_DIR=$(BUILD_DIR)/bin
 DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
 TARGET=$(BIN_DIR)/kernel.elf
+KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
 
 # Source files
 
 LIB_DIR = lib/
 
-C_SRCS = main.c \
-		 interrupts.c
+C_SRCS =
 
-HEADERS = interrupts.h
+HEADERS = 
 
-S_SRCS = start.s
+S_SRCS = 
 
+include threads/Makefile
 include lib/Makefile
 include devices/Makefile
 
 
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
-CFLAGS = -I$(LIB_DIR) -Wall -O0 -mcmodel=medany -ffreestanding -lgcc -nostdinc -nostdlib -nostartfiles -g
+CFLAGS = -I$(LIB_DIR) -I$(PWD) -Wall -Werror -O0 -mcmodel=medany -ffreestanding -lgcc -nostdinc -nostdlib -nostartfiles -g
 QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
 
 # Object files
@@ -46,10 +47,14 @@ $(OBJ_DIR)/%.o: %.s $(HEADERS)
 $(OBJ_DIR)/%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET): $(OBJS) $(HEADERS)
-	echo "$(OBJS)"
-	echo "$(C_SRCS)"
-	$(LD) $(LD_FLAGS) $(OBJS) -o $(TARGET)
+$(OBJ_DIR)/main.o:
+	$(CC) $(CFLAGS) -c main.c -o $@
+
+$(KERNEL_BASE): $(OBJS) $(HEADERS)
+	$(LD) $(LD_FLAGS) -r $(OBJS) -o $(KERNEL_BASE)
+
+$(TARGET): $(KERNEL_BASE) $(OBJ_DIR)/main.o
+	$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(TARGET)
 
 $(BIN_DIR)/kernel.img: $(TARGET)
 	$(OBJCOPY) -O binary $(TARGET) $(BIN_DIR)/kernel.img

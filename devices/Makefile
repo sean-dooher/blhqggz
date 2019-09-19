@@ -1,6 +1,8 @@
-EXPORT_DEVICE_HEADERS = serial.h
+EXPORT_DEVICE_HEADERS = serial.h \
+						test.h
 
-EXPORT_DEVICE_C_SRCS = serial.c
+EXPORT_DEVICE_C_SRCS = serial.c \
+					   test.c
 
 EXPORT_DEVICE_S_SRCS = 
 
