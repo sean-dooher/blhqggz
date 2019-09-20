@@ -56,10 +56,10 @@ uart_getc(UART_N uart)
 }
 
 void
-uart_puts(char* str, uint32_t len, UART_N uart)
+uart_puts(char* str, UART_N uart)
 {
-    for (int i = 0; i < len && str[i]; i++) {
-        uart_putc(str[i], uart);
+    while (*str) {
+        uart_putc(*str++, uart);
     }
 }
 

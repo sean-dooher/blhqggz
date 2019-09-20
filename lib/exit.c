@@ -1,6 +1,6 @@
 #include <string.h>
 #include "devices/test.h"
-#include "devices/serial.c"
+#include "devices/serial.h"
 
 
 void

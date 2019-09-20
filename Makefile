@@ -32,14 +32,14 @@ include devices/Makefile
 
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
-CFLAGS = -I$(LIB_DIR) -I$(PWD) -Wall -Werror -O0 -mcmodel=medany -ffreestanding -lgcc -nostdinc -nostdlib -nostartfiles -g
+CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
 QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
 
 # Object files
 
-OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
-
 all: $(TARGET)
+
+OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
 
 $(OBJ_DIR)/%.o: %.s $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -47,14 +47,14 @@ $(OBJ_DIR)/%.o: %.s $(HEADERS)
 $(OBJ_DIR)/%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/main.o:
+$(OBJ_DIR)/main.o: $(HEADERS)
 	$(CC) $(CFLAGS) -c main.c -o $@
 
 $(KERNEL_BASE): $(OBJS) $(HEADERS)
-	$(LD) $(LD_FLAGS) -r $(OBJS) -o $(KERNEL_BASE)
+	@$(LD) $(LD_FLAGS) -r $(OBJS) -o $(KERNEL_BASE)
 
 $(TARGET): $(KERNEL_BASE) $(OBJ_DIR)/main.o
-	$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(TARGET)
+	@$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(TARGET)
 
 $(BIN_DIR)/kernel.img: $(TARGET)
 	$(OBJCOPY) -O binary $(TARGET) $(BIN_DIR)/kernel.img
