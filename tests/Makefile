@@ -14,8 +14,8 @@ TEST_OBJ_DIR = $(TEST_BUILD_DIR)/obj
 TEST_DIRS = $(TEST_BUILD_DIR) $(TEST_OBJ_DIR) $(TEST_KERNEL_DIR)
 
 TEST_OBJS = $(addprefix $(TEST_OBJ_DIR)/, $(addsuffix .o, $(TEST_LIST)))
-TEST_LIB_OBJS = $(addprefix $(TEST_OBJ_DIR)/, $(patsubst %.c, %.o, $(TEST_LIB_SRCS)))
-TEST_LIB_OBJS += $(TEST_OBJ_DIR)/test_runner.o
+TEST_LIB_OBJS = $(TEST_OBJ_DIR)/test_runner.o
+TEST_LIB_OBJS += $(addprefix $(TEST_OBJ_DIR)/, $(patsubst %.c, %.o, $(TEST_LIB_SRCS)))
 TEST_KERNELS = $(addprefix $(TEST_KERNEL_DIR)/, $(addsuffix .elf, $(TEST_LIST)))
 
 CFLAGS += -I$(TEST_LIB_DIR)
@@ -32,10 +32,9 @@ $(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TEST_KERNEL_DIR)/%.elf: $(TEST_LIB_OBJS) $(TEST_OBJS) $(KERNEL_BASE)
-	$(LD) $(LDFLAGS) $(TEST_LIB_OBJS) $(TEST_OBJ_DIR)/$(notdir $(patsubst %.elf, %.o, $@)) $(KERNEL_BASE) -o $@
+	$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(TEST_LIB_OBJS) $(TEST_OBJ_DIR)/$(notdir $(patsubst %.elf, %.o, $@)) -o $@
 
-# test:
-# 	@echo "$(TEST_OBJS)"
-
+run: $(TEST_KERNELS)
+	$(QEMU) $(QEMU_FLAGS) -kernel $(TARGET)
 
 $(shell mkdir -p $(TEST_DIRS))

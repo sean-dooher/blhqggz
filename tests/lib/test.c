@@ -5,9 +5,10 @@ void
 assert(int assertion, char *message)
 {
     if (!assertion) {
-        print(message);   
+        print(message);
+        print("\n");   
         poweroff(-1);
     } else {
-        print("PASS");
+        print("PASS\n");
     }
 }

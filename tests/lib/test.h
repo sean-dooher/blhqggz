@@ -1,6 +1,7 @@
 #pragma once
 
-void run_test();
 void main();
+
+void run_test();
 
 void assert(int assertion, char *message);

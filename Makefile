@@ -8,8 +8,9 @@ QEMU = qemu-system-riscv64
 
 export CC
 export LD
+export QEMU
 
-# Targets
+# KERNELs
 BUILD_DIR=build
 OBJ_DIR=$(BUILD_DIR)/obj
 BIN_DIR=$(BUILD_DIR)/bin
@@ -19,9 +20,12 @@ export BUILD_DIR
 export BIN_DIR
 export OBJ_DIR
 
-TARGET=$(BIN_DIR)/kernel.elf
+KERNEL=$(BIN_DIR)/kernel.elf
 KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
 export KERNEL_BASE
+
+TARGET ?= kernel.elf
+BIN_TARGET = $(addprefix $(BIN_DIR)/, $(TARGET))
 
 # Source files
 
@@ -51,42 +55,42 @@ export CFLAGS
 OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
 export OBJS
 
-all: $(TARGET)
+all: $(KERNEL)
 
 $(OBJ_DIR)/%.o: %.s $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/main.o: $(HEADERS)
-	$(CC) $(CFLAGS) -c main.c -o $@
+	@$(CC) $(CFLAGS) -c main.c -o $@
 
 $(KERNEL_BASE): $(OBJS) $(HEADERS)
 	@$(LD) $(LD_FLAGS) -r $(OBJS) -o $(KERNEL_BASE)
 
-$(TARGET): $(KERNEL_BASE) $(OBJ_DIR)/main.o
-	@$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(TARGET)
+$(KERNEL): $(KERNEL_BASE) $(OBJ_DIR)/main.o
+	@$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(KERNEL)
 
-$(BIN_DIR)/kernel.img: $(TARGET)
-	$(OBJCOPY) -O binary $(TARGET) $(BIN_DIR)/kernel.img
+$(BIN_DIR)/kernel.img: $(KERNEL)
+	@$(OBJCOPY) -O binary $(KERNEL) $(BIN_DIR)/kernel.img
 
-build_tests: $(KERNEL_BASE)
+tests: $(KERNEL_BASE)
 	$(MAKE) -f tests/Makefile
 
 clean:
 	rm -rf build
 
-run_disas: $(TARGET)
-	$(QEMU) $(QEMU_FLAGS) -kernel $(TARGET) -d in_asm
+run_disas: $(BIN_TARGET)
+	@$(QEMU) $(QEMU_FLAGS) -kernel $(BIN_TARGET) -d in_asm
 
-run: $(TARGET)
-	$(QEMU) $(QEMU_FLAGS) -kernel $(TARGET)
+run: $(BIN_TARGET)
+	@$(QEMU) $(QEMU_FLAGS) -kernel $(BIN_TARGET)
 
-debug: $(TARGET)
-	$(QEMU) $(QEMU_FLAGS) -kernel $(TARGET) -S -gdb tcp::9000
+debug: $(BIN_TARGET)
+	@$(QEMU) $(QEMU_FLAGS) -kernel $(BIN_TARGET) -S -gdb tcp::9000
 
 gdb:
-	$(GDB) --eval-command="target remote :9000" $(TARGET)
+	$(GDB) --eval-command="target remote :9000" $(BIN_TARGET)
 
 $(shell mkdir -p $(DIRS))
