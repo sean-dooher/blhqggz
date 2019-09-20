@@ -16,6 +16,8 @@ BIN_DIR=$(BUILD_DIR)/bin
 DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
 export BUILD_DIR
+export BIN_DIR
+export OBJ_DIR
 
 TARGET=$(BIN_DIR)/kernel.elf
 KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
