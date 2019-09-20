@@ -25,10 +25,11 @@ HEADERS =
 
 S_SRCS = 
 
-include threads/Makefile
-include lib/Makefile
-include devices/Makefile
+SRC_SUBDIRS = threads \
+			  lib \
+			  devices
 
+include $(addsuffix /Makefile, $(SRC_SUBDIRS))
 
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
