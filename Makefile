@@ -6,14 +6,20 @@ GDB = $(CROSS_COMP)-gdb
 OBJCOPY = $(CROSS_COMP)-objcopy
 QEMU = qemu-system-riscv64
 
+export CC
+export LD
+
 # Targets
 BUILD_DIR=build
 OBJ_DIR=$(BUILD_DIR)/obj
 BIN_DIR=$(BUILD_DIR)/bin
 DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
+export BUILD_DIR
+
 TARGET=$(BIN_DIR)/kernel.elf
 KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
+export KERNEL_BASE
 
 # Source files
 
@@ -36,11 +42,14 @@ LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
 QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
 
+export LD_FLAGS
+export CFLAGS
+
 # Object files
+OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
+export OBJS
 
 all: $(TARGET)
-
-OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
 
 $(OBJ_DIR)/%.o: %.s $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -59,6 +68,9 @@ $(TARGET): $(KERNEL_BASE) $(OBJ_DIR)/main.o
 
 $(BIN_DIR)/kernel.img: $(TARGET)
 	$(OBJCOPY) -O binary $(TARGET) $(BIN_DIR)/kernel.img
+
+build_tests: $(KERNEL_BASE)
+	$(MAKE) -f tests/Makefile
 
 clean:
 	rm -rf build
