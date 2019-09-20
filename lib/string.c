@@ -80,8 +80,8 @@ reverse(char *str, size_t len)
     int half = len/2;
     for (int i = 0; i < half; i++) {
         char temp = str[i];
-        str[i] = str[half - 1 - i];
-        str[half - 1 - i] = temp;
+        str[i] = str[len - 1 - i];
+        str[len - 1 - i] = temp;
     }
     return str;
 }
