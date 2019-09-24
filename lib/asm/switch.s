@@ -6,7 +6,7 @@ sd \reg, (\n << 3)(sp)
 .endm
 
 .macro RESTORE_REG reg, n
-lw \reg, (\n << 3)(sp)
+ld \reg, (\n << 3)(sp)
 .endm
 
 .macro DUMP_REGISTERS_INT

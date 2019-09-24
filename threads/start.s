@@ -83,7 +83,9 @@ m_interrupt_vector:
 
     mv      a0, sp
     csrr    a1, mcause
-    csrr    a2, mepc
+    csrr    a2, mstatus
+    csrr    a3, mepc
+    mv      a4, sp
     jal     ra, machine_interrupt_handler
 
     RESTORE_REGISTERS_INT

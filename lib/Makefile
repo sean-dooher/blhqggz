@@ -15,7 +15,8 @@ EXPORT_LIB_C_SRCS = string.c \
 					stdio.c
 
 EXPORT_LIB_S_SRCS = asm/bootup.s \
-				    asm/switch.s
+                    asm/switch.s \
+                    asm/ecall.s
 
 HEADERS += $(addprefix lib/, $(EXPORT_LIB_HEADERS))
 C_SRCS += $(addprefix lib/, $(EXPORT_LIB_C_SRCS))
