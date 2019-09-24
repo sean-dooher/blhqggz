@@ -42,10 +42,7 @@ _pmp_setup:
     csrw pmpaddr0, t1
 
     # set up permissions as RWX and NA_POT
-    addi t1, zero, PMP_NAPOT
-    ori t1, t1, PMP_R
-    ori t1, t1, PMP_W
-    ori t1, t1, PMP_X
+    li t1, PMP_NAPOT | PMP_R | PMP_X | PMP_W
     csrw pmpcfg0, t1
 
     # switch mtvec back to normal hanler
@@ -54,31 +51,25 @@ _pmp_setup:
 
 _ret_to_smode:
     # set up privilege mode to return to (S = 1)
-    
-    # Create 
-    addi t1, zero, PRIV_S
-    slli t1, t1, MPP_OFFSET
-    
-    csrr t0, mstatus
-    or t0, t0, t1
+    li t0, PRIV_S << MPP_OFFSET
+    csrrs x0, mstatus, t0
 
     # set up address to jump to on switch to smode
     la t0, _s_mode_start
     csrw mepc, t0
-
-    csrw mstatus, t0
 
     mret
 
 _s_mode_start:
     jal ra, main
 
-    addi a0, a0, 0
+    li a0, 0
     jal ra, poweroff
 
 _proc_sleep:
     wfi
 
+.text
 .align 4
 .global enable_interrupts_s
 enable_interrupts_s:
