@@ -56,7 +56,7 @@ uart_getc(UART_N uart)
 }
 
 void
-uart_puts(char* str, UART_N uart)
+uart_puts(const char* str, UART_N uart)
 {
     while (*str) {
         uart_putc(*str++, uart);

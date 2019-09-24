@@ -1,7 +1,9 @@
+#include <stdarg.h>
 #include "devices/serial.h"
 
+
 void
-print(char *msg)
+print(const char *msg)
 {
     serial_puts(msg);
 }

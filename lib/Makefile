@@ -1,12 +1,17 @@
 EXPORT_LIB_HEADERS = alloca.h \
+					 stdarg.h \
 					 stdint.h \
+					 stddef.h \
+					 stdbool.h \
 					 pmp.h \
 					 string.h \
 					 exit.h \
+					 printf.h \
 					 stdio.h
 
 EXPORT_LIB_C_SRCS = string.c \
 					exit.c \
+					printf.c \
 					stdio.c
 
 EXPORT_LIB_S_SRCS = asm/bootup.s \

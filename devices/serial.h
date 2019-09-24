@@ -21,5 +21,5 @@ void uart_init(UART_N);
 void uart_putc(char, UART_N);
 char uart_getc(UART_N);
 
-void uart_puts(char*, UART_N);
+void uart_puts(const char*, UART_N);
 void uart_gets(char*, uint32_t, UART_N);

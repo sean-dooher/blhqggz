@@ -1,3 +1,6 @@
 #pragma once
 
-void print(char *msg);
+#include <stdarg.h>
+#include <printf.h>
+
+void print(const char *msg);
