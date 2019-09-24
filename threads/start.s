@@ -16,8 +16,21 @@ _start:
 
     # sleep all cores except core 0
     csrr t0, mhartid
-    bnez t0, proc_sleep
+    bnez t0, _proc_sleep
 
+_stack_setup:
+    # set up stack pointer
+    la sp, stack + STACK_SIZE
+
+_smode_interrupt_delegation:
+    li t0, 0x111
+    csrw mideleg, t0
+
+_smode_exception_delegation:
+    li t0, 0xB3FF
+    csrw medeleg, t0
+
+_pmp_setup:
     # set up PMP for supervisor to access memory without error
     
     # set up mtvec to skip this if PMP not supported
@@ -38,8 +51,8 @@ _start:
     # switch mtvec back to normal hanler
     .align 2
     1: csrw mtvec, t0
-  
 
+_ret_to_smode:
     # set up privilege mode to return to (S = 1)
     
     # Create 
@@ -50,24 +63,28 @@ _start:
     or t0, t0, t1
 
     # set up address to jump to on switch to smode
-    la t0, s_mode_start
+    la t0, _s_mode_start
     csrw mepc, t0
-
-    # set up stack pointer
-    la sp, stack + STACK_SIZE
 
     csrw mstatus, t0
 
     mret
 
-s_mode_start:
+_s_mode_start:
     jal ra, main
 
     addi a0, a0, 0
     jal ra, poweroff
 
-proc_sleep:
+_proc_sleep:
     wfi
+
+.align 4
+.global enable_interrupts_s
+enable_interrupts_s:
+    li t0, 0x111
+    csrw sie, t0
+    ret
 
 .align 2
 m_interrupt_vector:

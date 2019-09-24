@@ -1,10 +1,12 @@
 #include "devices/serial.h"
 #include "exit.h"
+#include "threads/interrupts.h"
 
 void
 main()
 {
     serial_init();
+    // enable_interrupts_s();
 
     while (1) 
     {
