@@ -58,18 +58,23 @@ export OBJS
 all: $(KERNEL)
 
 $(OBJ_DIR)/%.o: %.s $(HEADERS)
+	@echo "CC $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c $(HEADERS)
+	@echo "CC $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/main.o: $(HEADERS)
+$(OBJ_DIR)/main.o: $(HEADERS) main.c
+	@echo "CC $@"
 	@$(CC) $(CFLAGS) -c main.c -o $@
 
 $(KERNEL_BASE): $(OBJS) $(HEADERS)
+	@echo "LD $(KERNEL_BASE)"
 	@$(LD) $(LD_FLAGS) -r $(OBJS) -o $(KERNEL_BASE)
 
 $(KERNEL): $(KERNEL_BASE) $(OBJ_DIR)/main.o
+	@echo "LD $(KERNEL)"
 	@$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(KERNEL)
 
 $(BIN_DIR)/kernel.img: $(KERNEL)
