@@ -1,10 +1,12 @@
 EXPORT_DEVICE_HEADERS = serial.h \
 						test.h \
-						clint.h
+						clint.h \
+						timer.h
 
 EXPORT_DEVICE_C_SRCS = serial.c \
 					   test.c \
-					   clint.c
+					   clint.c \
+					   timer.c
 
 EXPORT_DEVICE_S_SRCS = 
 

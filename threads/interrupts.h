@@ -2,8 +2,15 @@
 
 #include <stdint.h>
 
-void machine_interrupt_handler(uint64_t *sp, uint32_t mcause, uint64_t *mepc);
-void supervisor_interrupt_handler(uint64_t *sp, uint32_t mcause, uint64_t *mepc);
+enum {
+    S_INTERRUPTS_ON = 0x222,
+    S_INTERRUPTS_OFF = 0x000
+};
 
 void machine_interrupt_handler(uint64_t *sp, uint64_t mcause, uint64_t mstatus, uint64_t *mepc);
 void supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, uint64_t *sepc);
+
+uint64_t init_interrupts_s (void);
+uint64_t set_interrupt_level_s (uint64_t interrupt_level);
+
+void software_interrupt_s (void);
