@@ -30,9 +30,11 @@ struct uart_info *UART_BASES[] = {
 void
 uart_init(UART_N uart_n) 
 {
+    #ifdef SIFIVE_U
     struct uart_info *uart = UART_BASES[uart_n];
     uart->rxctrl |= 1;
     uart->txctrl |= 1;
+    #endif
 }
 
 void

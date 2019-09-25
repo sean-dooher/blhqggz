@@ -1,14 +1,15 @@
 #include "devices/timer.h"
 #include "ecall.h"
+#include "devices/clint.h"
 
 uint64_t
 read_time ()
 {
-    return ecall(TIME_READ);
+    return clint_read_mtime();
 }
 
 void
 init_time ()
 {
-    ecall(TIME_INIT);
+    clint_init();
 }
