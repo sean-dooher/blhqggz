@@ -23,20 +23,20 @@ _stack_setup:
     la sp, stack + STACK_SIZE
 
 _smode_interrupt_delegation:
-    li t0, 0x111
-    csrw mideleg, t0
+    li t0, 0xFFF
+    csrrs x0, mideleg, t0
 
 _smode_exception_delegation:
     li t0, 0xB1FF
-    csrw medeleg, t0
+    csrrs x0, medeleg, t0
 
-# FIXME: Figure out why smode interrupts aren't working
-# _smode_global_int_enable:
+# # FIXME: Figure out why smode interrupts aren't working
+# # _smode_global_int_enable:
 #     # enable s mode interrupts globally
 #     li t0, 0x22
 #     csrrs x0, mstatus, t0
 
-#     # disable s mode interrupts
+#     # enable s mode interrupts
 #     la t0, 0x222
 #     csrrs x0, sie, t0
 
@@ -49,7 +49,10 @@ _smode_exception_delegation:
 #     # enable s mode interrupts globally
 #     li t0, 0x2
 #     csrrs x0, sstatus, t0
-    
+
+_mode_enable_interrupts:
+    li t0, 0xaaa
+    csrrs x0, mie, t0
 
 _pmp_setup:
     # set up PMP for supervisor to access memory without error

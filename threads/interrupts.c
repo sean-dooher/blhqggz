@@ -18,16 +18,8 @@ void
 handle_s_mode_ecall(struct regfile* regfile) {
     uint64_t ecall_code = regfile->reg[A0];
 
-    printf("Handling Ecall: %ld\n", ecall_code);
-
     switch (ecall_code)
     {
-    case TIME_INIT:
-        clint_init();
-        break;
-    case TIME_READ:
-        regfile->reg[A0] = clint_read_mtime();
-        break;
     default:
         printf("Unhandled Ecall: %ld\n", ecall_code);
         break;
