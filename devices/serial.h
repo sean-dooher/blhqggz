@@ -1,8 +1,12 @@
 #pragma once
 #include <stdint.h>
 
+#ifdef SIFIVE_U
 #define UART0_BASE 0x10013000
 #define UART1_BASE 0x10023000
+#else
+#define UART0_BASE 0x10000000
+#endif
 
 typedef enum UART_N {
     UART0 = 0,

@@ -46,7 +46,7 @@ include $(addsuffix /Makefile, $(SRC_SUBDIRS))
 # Tool Options
 LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
-QEMU_FLAGS = -M sifive_u -display none -serial stdio -serial null
+QEMU_FLAGS = -M virt -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
 
 export LD_FLAGS
 export CFLAGS

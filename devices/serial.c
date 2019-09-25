@@ -2,7 +2,12 @@
 
 #define RX_EMPTY (1 << 31)
 #define TX_FULL (1 << 31)
+
+#ifdef SIFIVE_U
 #define N_UART_BASES 2
+#else
+#define N_UART_BASES 1
+#endif
 
 struct uart_info {
     uint32_t txdata;
@@ -16,7 +21,9 @@ struct uart_info {
 
 struct uart_info *UART_BASES[] = {
     (struct uart_info *) UART0_BASE,
+    #if N_UART_BASES > 1
     (struct uart_info *) UART1_BASE
+    #endif
 };
 
 
