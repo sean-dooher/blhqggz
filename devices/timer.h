@@ -2,5 +2,6 @@
 
 #include <stdint.h>
 
-uint64_t read_time (void);
-void init_time (void);
+uint64_t time_read (void);
+void time_init (void);
+void time_clear (void);

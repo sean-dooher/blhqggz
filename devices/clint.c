@@ -48,3 +48,10 @@ clint_schedule (uint64_t delay)
 {
     CLINT_TIMECMP[0] = clint_read_mtime() + delay;
 }
+
+
+void
+clint_clear (void)
+{
+    CLINT_TIMECMP[0] = -1UL;
+}

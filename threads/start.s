@@ -8,7 +8,7 @@
 .global _start
 _start:
     # set up interrupt vector
-    la      t0, m_interrupt_vector
+    la      t0, m_interrupt_vector_early
     csrw    mtvec, t0
 
     la      t0, s_interrupt_vector
@@ -23,7 +23,7 @@ _stack_setup:
     la sp, stack + STACK_SIZE
 
 _smode_interrupt_delegation:
-    li t0, 0xFFF
+    li t0, (1 << 9) | (1 << 5) | (1 << 1)
     csrrs x0, mideleg, t0
 
 _smode_exception_delegation:
@@ -75,8 +75,12 @@ _pmp_setup:
 
 _ret_to_smode:
     # set up privilege mode to return to (S = 1)
-    li t0, PRIV_S << MPP_OFFSET
+    li t0, (PRIV_S << MPP_OFFSET) | (1 << 1) | (1 << 3) | (1 << 5)
     csrrs x0, mstatus, t0
+
+    la      t0, m_interrupt_vector
+    add    t0, t0, 1
+    csrw    mtvec, t0
 
     # set up address to jump to on switch to smode
     la t0, _s_mode_start
@@ -118,25 +122,11 @@ software_interrupt_s:
     ret
 
 .align 2
-m_interrupt_vector:
-    DUMP_REGISTERS_INT
-
-    mv      a0, sp
-    csrr    a1, mcause
-    csrr    a2, mstatus
-    csrr    a3, mepc
-    mv      a4, sp
-    jal     ra, machine_interrupt_handler
-
-    csrr    t0, mepc
-    addi    t0, t0, 4
-    csrw    mepc, t0 
-
-    RESTORE_REGISTERS_INT
-
-    mret
+m_interrupt_vector_early:
+    j .
 
 .align 2
+.global s_interrupt_vector
 s_interrupt_vector:
     DUMP_REGISTERS_INT
 
@@ -160,3 +150,13 @@ s_interrupt_vector:
 .global stack
 stack:
     .skip STACK_SIZE
+
+
+.data
+.global asm_printf_ld
+asm_printf_ld:
+.string "ASM DEBUG: %ld\n"
+
+.global asm_printf_lx
+asm_printf_lx:
+.string "ASM DEBUG: 0x%lx\n"

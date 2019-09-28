@@ -48,3 +48,21 @@ RESTORE_REG t5, 14
 RESTORE_REG t6, 15
 addi sp, sp, CONTEXT_SIZE
 .endm
+
+.macro M_MODE_INTERRUPT_ENTRY
+DUMP_REGISTERS_INT
+
+mv      a0, sp
+csrr    a1, mcause
+csrr    a2, mstatus
+csrr    a3, mepc
+mv      a4, sp
+.endm
+
+.macro M_MODE_INTERRUPT_EXIT
+csrr    t0, mepc
+addi    t0, t0, 4
+csrw    mepc, t0
+
+RESTORE_REGISTERS_INT
+.endm

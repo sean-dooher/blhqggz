@@ -3,13 +3,19 @@
 #include "devices/clint.h"
 
 uint64_t
-read_time ()
+time_read ()
 {
     return clint_read_mtime();
 }
 
 void
-init_time ()
+time_init ()
 {
     clint_init();
+}
+
+void
+time_clear ()
+{
+    clint_clear();
 }
