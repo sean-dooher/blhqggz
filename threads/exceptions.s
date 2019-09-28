@@ -52,27 +52,6 @@ m_rest_intr:
 .align 2
     j handle_m_interrupt
 
-.macro csr_m_to_s csr_name, reg
-    csrr \reg, m\csr_name
-    csrw s\csr_name, \reg
-.endm
-
-.macro convert_mstatus reg
-addi sp, sp, -8
-DUMP_REG    t1, 0
-
-# grab MPIE and move to SPIE
-
-# set MPIE to 0
-
-# set SPP to correct val from MPP
-
-# set MPP to S_MODE
-
-RESTORE_REG t1, 0
-addi sp, sp, 8
-.endm
-
 .text
 .align 4
 m_send_timer_to_s:
@@ -100,3 +79,74 @@ handle_m_interrupt:
     M_MODE_INTERRUPT_ENTRY
     jal ra, machine_interrupt_handler
     M_MODE_INTERRUPT_EXIT
+
+.text
+.align 4
+.global s_interrupt_vector
+s_interrupt_vector:
+s_synch_exc:
+    j handle_s_interrupt
+.align 2
+s_s_soft_intr:
+    j handle_s_interrupt
+.align 2
+s_res_soft_intr:
+    j handle_s_interrupt
+.align 2
+s_m_soft_intr:
+    j handle_s_interrupt
+.align 2
+s_u_timer_intr:
+    j handle_s_interrupt
+.align 2
+s_s_timer_intr:
+    j handle_s_interrupt
+.align 2
+s_res_timer_intr:
+    j handle_s_interrupt
+.align 2
+s_m_timer_intr:
+    j handle_s_interrupt
+.align 2
+s_u_extern_intr:
+    j handle_s_interrupt
+.align 2
+s_s_extern_intr:
+    j handle_s_interrupt
+.align 2
+s_res_extern_intr:
+    j handle_s_interrupt
+.align 2
+s_m_extern_intr:
+    j handle_s_interrupt
+.align 2
+s_rest_intr:
+    j handle_s_interrupt
+.align 2
+    j handle_s_interrupt
+.align 2
+    j handle_s_interrupt
+.align 2
+    j handle_s_interrupt
+.align 2
+    j handle_s_interrupt
+
+.text
+.align 4
+handle_s_interrupt:
+    DUMP_REGISTERS_INT
+
+    mv      a0, sp
+    csrr    a1, scause
+    csrr    a2, sstatus
+    csrr    a3, sepc
+    mv      a4, sp
+
+    jal ra, supervisor_interrupt_handler
+
+    csrr    t0, sepc
+    addi    t0, t0, 4
+    csrw    sepc, t0
+    RESTORE_REGISTERS_INT
+
+    sret

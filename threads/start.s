@@ -12,6 +12,7 @@ _start:
     csrw    mtvec, t0
 
     la      t0, s_interrupt_vector
+    ori     t0, t0, 1
     csrw    stvec, t0
 
     # sleep all cores except core 0
@@ -62,7 +63,7 @@ _ret_to_smode:
 
     # set up vectorized machine mode interrupts
     la      t0, m_interrupt_vector
-    add    t0, t0, 1
+    ori     t0, t0, 1
     csrw    mtvec, t0
 
     # set up address to jump to on switch to smode
@@ -107,26 +108,6 @@ software_interrupt_s:
 .align 2
 m_interrupt_vector_early:
     j .
-
-.align 2
-.global s_interrupt_vector
-s_interrupt_vector:
-    DUMP_REGISTERS_INT
-
-    mv      a0, sp
-    csrr    a1, scause
-    csrr    a2, sstatus
-    csrr    a3, sepc
-    mv      a4, sp
-    jal     ra, supervisor_interrupt_handler
-
-    csrr    t0, sepc
-    addi    t0, t0, 4
-    csrw    sepc, t0
-
-    RESTORE_REGISTERS_INT
-
-    sret
 
 .bss
 .align 4
