@@ -89,11 +89,6 @@ m_send_timer_to_s:
     li t0, (1 << SPIE_OFFSET)
     csrrs x0, mip, t0
 
-    # la a0, asm_printf_lx
-    # csrr a1, mip
-    # jal ra, printf_
-
-
     RESTORE_REG t1, 0
     addi sp, sp, 8
     csrrw t0, mscratch, t0

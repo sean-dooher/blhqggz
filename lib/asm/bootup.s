@@ -12,7 +12,19 @@
 
 .equ MPP_OFFSET, 11
 .equ SPP_OFFSET, 8
-
-.equ MPIE_OFFSET, 7
+.equ MIE_OFFSET, 3
 .equ SPIE_OFFSET, 5
+.equ SIE_OFFSET, 1
+
+.equ ME_IRQ_OFFSET, 11
+.equ SE_IRQ_OFFSET, 9
+.equ UE_IRQ_OFFSET, 8
+
+.equ MT_IRQ_OFFSET, 7
+.equ ST_IRQ_OFFSET, 5
+.equ UT_IRQ_OFFSET, 4
+
+.equ MS_IRQ_OFFSET, 3
+.equ SS_IRQ_OFFSET, 1
+.equ US_IRQ_OFFSET, 0
 

@@ -23,32 +23,14 @@ _stack_setup:
     la sp, stack + STACK_SIZE
 
 _smode_interrupt_delegation:
-    li t0, (1 << 9) | (1 << 5) | (1 << 1)
+    # defer all supervisor interrupts to S MODE
+    li t0, (1 << SE_IRQ_OFFSET) | (1 << ST_IRQ_OFFSET) | (1 << SS_IRQ_OFFSET)
     csrrs x0, mideleg, t0
 
 _smode_exception_delegation:
+    # defer all exceptions to S MODE
     li t0, 0xB1FF
     csrrs x0, medeleg, t0
-
-# # FIXME: Figure out why smode interrupts aren't working
-# # _smode_global_int_enable:
-#     # enable s mode interrupts globally
-#     li t0, 0x22
-#     csrrs x0, mstatus, t0
-
-#     # enable s mode interrupts
-#     la t0, 0x222
-#     csrrs x0, sie, t0
-
-#     csrrsi a0, sstatus, 0x2
-
-#     # enable smode interrupts in mie
-#     li t0, 0xaaa
-#     csrrs x0, mie, t0
-
-#     # enable s mode interrupts globally
-#     li t0, 0x2
-#     csrrs x0, sstatus, t0
 
 _mode_enable_interrupts:
     li t0, 0xaaa
@@ -75,9 +57,10 @@ _pmp_setup:
 
 _ret_to_smode:
     # set up privilege mode to return to (S = 1)
-    li t0, (PRIV_S << MPP_OFFSET) | (1 << 1) | (1 << 3) | (1 << 5)
+    li t0, (PRIV_S << MPP_OFFSET) | (1 << SIE_OFFSET) | (1 << MIE_OFFSET) | (1 << SPIE_OFFSET)
     csrrs x0, mstatus, t0
 
+    # set up vectorized machine mode interrupts
     la      t0, m_interrupt_vector
     add    t0, t0, 1
     csrw    mtvec, t0
