@@ -18,10 +18,14 @@ export KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
 TARGET ?= kernel.elf
 BIN_TARGET = $(addprefix $(BIN_DIR)/, $(TARGET))
 
+# Platform information
+PLATFORM_DIR = platform/
+PLATFORM ?= virt
+
 # Tool Options
 export LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 export CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
-export QEMU_FLAGS = -M virt -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
+export QEMU_FLAGS = -M $(PLATFORM) -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
 
 # Source files
 
@@ -38,9 +42,6 @@ SRC_SUBDIRS = threads \
 			  devices
 
 include $(addsuffix /Makefile, $(SRC_SUBDIRS))
-
-PLATFORM_DIR = platform/
-PLATFORM ?= qemu_virt
 
 include $(addprefix $(PLATFORM_DIR), $(PLATFORM).mk)
 
