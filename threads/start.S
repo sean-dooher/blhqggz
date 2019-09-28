@@ -1,8 +1,7 @@
-#include "interrupts.h"
-
 .section .text.init
 
-.include "asm/bootup.s"
+#include "devices/machine.h"
+
 .include "asm/switch.s"
 
 .global _start

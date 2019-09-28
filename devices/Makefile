@@ -1,7 +1,9 @@
 EXPORT_DEVICE_HEADERS = serial.h \
 						test.h \
 						clint.h \
-						timer.h
+						timer.h \
+						platform.h \
+						machine.h
 
 EXPORT_DEVICE_C_SRCS = serial.c \
 					   test.c \

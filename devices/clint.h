@@ -1,4 +1,5 @@
 #pragma once
+
 #include <stdint.h>
 
 void clint_init (void);

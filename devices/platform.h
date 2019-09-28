@@ -1,0 +1,28 @@
+#pragma once
+
+#ifdef QEMU_VIRT
+
+#define SIFIVE_CLINT
+
+#define N_UART 1
+#define UART0_BASE 0x10000000
+
+#elif SIFIVE_U
+
+#define N_UART 2
+#define SIFIVE_CLINT
+#define UART0_BASE 0x10013000
+#define UART1_BASE 0x10023000
+
+#endif
+
+
+#ifdef SIFIVE_CLINT
+
+#define CLINT_BASE 0x2000000
+#define SIFIVE_SIP_BASE 0x0
+#define SIFIVE_TIMECMP_BASE 0x4000
+#define SIFIVE_TIME_BASE 0xBFF8
+#define SIFIVE_CLINT_TIMEBASE_FREQ 10000000
+
+#endif

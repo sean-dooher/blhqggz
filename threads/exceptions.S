@@ -1,5 +1,7 @@
+#include "devices/platform.h"
+#include "devices/machine.h"
+
 .include "asm/switch.s"
-.include "asm/bootup.s"
 
 .text
 .align 4
@@ -60,8 +62,7 @@ m_send_timer_to_s:
     DUMP_REG t1, 0
 
 
-    la t0, CLINT_TIMECMP
-    ld t0, 0(t0)
+    la t0, CLINT_BASE + SIFIVE_TIMECMP_BASE
     li t1, -1UL
     sd t1, 0(t0)
 

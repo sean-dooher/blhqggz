@@ -1,31 +1,27 @@
 # Tools
-CROSS_COMP = riscv64-unknown-elf
-CC = $(CROSS_COMP)-gcc
-LD = $(CROSS_COMP)-ld
-GDB = $(CROSS_COMP)-gdb
-OBJCOPY = $(CROSS_COMP)-objcopy
-QEMU = qemu-system-riscv64
-
-export CC
-export LD
-export QEMU
+export CROSS_COMP = riscv64-unknown-elf
+export CC = $(CROSS_COMP)-gcc
+export LD = $(CROSS_COMP)-ld
+export GDB = $(CROSS_COMP)-gdb
+export OBJCOPY = $(CROSS_COMP)-objcopy
+export QEMU = qemu-system-riscv64
 
 # KERNELs
-BUILD_DIR=build
-OBJ_DIR=$(BUILD_DIR)/obj
-BIN_DIR=$(BUILD_DIR)/bin
+export BUILD_DIR=build
+export OBJ_DIR=$(BUILD_DIR)/obj
+export BIN_DIR=$(BUILD_DIR)/bin
 DIRS=$(BUILD_DIR) $(OBJ_DIR) $(BIN_DIR)
 
-export BUILD_DIR
-export BIN_DIR
-export OBJ_DIR
-
 KERNEL=$(BIN_DIR)/kernel.elf
-KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
-export KERNEL_BASE
+export KERNEL_BASE=$(OBJ_DIR)/prebuild_kernel.o
 
 TARGET ?= kernel.elf
 BIN_TARGET = $(addprefix $(BIN_DIR)/, $(TARGET))
+
+# Tool Options
+export LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
+export CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
+export QEMU_FLAGS = -M virt -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
 
 # Source files
 
@@ -43,22 +39,28 @@ SRC_SUBDIRS = threads \
 
 include $(addsuffix /Makefile, $(SRC_SUBDIRS))
 
-# Tool Options
-LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
-CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
-QEMU_FLAGS = -M virt -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
+PLATFORM_DIR = platform/
+PLATFORM ?= qemu_virt
 
-export LD_FLAGS
-export CFLAGS
+include $(addprefix $(PLATFORM_DIR), $(PLATFORM).mk)
 
 # Object files
-OBJS = $(addprefix $(OBJ_DIR)/, $(C_SRCS:.c=.o) $(S_SRCS:.s=.o))
+S_OBJS := $(S_SRCS:.s=.o)
+S_OBJS := $(S_OBJS:.S=.o)
+C_OBJS := $(C_SRCS:.c=.o)
+
+OBJS = $(addprefix $(OBJ_DIR)/, $(C_OBJS) $(S_OBJS))
 export OBJS
 
+.PHONY: all
 all: $(KERNEL)
 
+$(OBJ_DIR)/%.o: %.S $(HEADERS)
+	@echo "AS $@"
+	@$(CC) $(CFLAGS) -c $< -o $@
+
 $(OBJ_DIR)/%.o: %.s $(HEADERS)
-	@echo "CC $@"
+	@echo "AS $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c $(HEADERS)
