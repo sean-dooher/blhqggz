@@ -20,9 +20,16 @@ handle_s_mode_ecall(struct regfile* regfile) {
 
     switch (ecall_code)
     {
-    default:
-        printf("Unhandled Ecall: %ld\n", ecall_code);
-        break;
+        case TIME_INIT:
+            break;
+        case TIME_CLEAR:
+            break;
+        case TIME_SET:
+            break;
+        default:
+            printf("Unhandled Ecall: %ld\n", ecall_code);
+            while (true);
+            break;
     }
 }
 
@@ -36,7 +43,7 @@ machine_interrupt_handler(uint64_t *sp, uint64_t mcause, uint64_t mstatus, uint6
             break;
         default:
             printf("unhandled machine interrupt: \n\tsp: 0x%p\n\tmcause: 0x%lx\n\tmstatus: 0x%lx\n\tmepc: 0x%p\n", sp, mcause, mstatus, mepc);
-            while(true);
+            while (true);
             break;
     }
     return;

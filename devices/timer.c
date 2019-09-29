@@ -19,7 +19,7 @@ void
 time_init ()
 {
 #if defined(QEMU_VIRT) || defined(SIFIVE_U)
-    clint_init();
+    ecall(TIME_INIT);
 #endif
 }
 
@@ -29,4 +29,10 @@ time_clear ()
 #if defined(QEMU_VIRT) || defined(SIFIVE_U)
     clint_clear();
 #endif
+}
+
+void
+timer_interrupt () 
+{
+    return;
 }

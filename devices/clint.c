@@ -1,6 +1,5 @@
 #include <stdint.h>
-#include <devices/clint.h>
-#include "devices/platform.h"
+#include "devices/clint.h"
 
 uint32_t *CLINT_SIP     = (uint32_t *) (CLINT_BASE + SIFIVE_SIP_BASE);
 uint64_t *CLINT_TIMECMP = (uint64_t *) (CLINT_BASE + SIFIVE_TIMECMP_BASE);

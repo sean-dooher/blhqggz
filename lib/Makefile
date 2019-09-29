@@ -7,15 +7,16 @@ EXPORT_LIB_HEADERS = alloca.h \
 					 string.h \
 					 exit.h \
 					 printf.h \
+					 ecall.h \
 					 stdio.h
 
 EXPORT_LIB_C_SRCS = string.c \
 					exit.c \
 					printf.c \
-					stdio.c
+					stdio.c \
+					ecall.c
 
-EXPORT_LIB_S_SRCS = asm/switch.S \
-                    asm/ecall.S
+EXPORT_LIB_S_SRCS = asm/switch.S
 
 HEADERS += $(addprefix lib/, $(EXPORT_LIB_HEADERS))
 C_SRCS += $(addprefix lib/, $(EXPORT_LIB_C_SRCS))

@@ -12,9 +12,8 @@ main()
     serial_init ();
     time_init ();
 
-    clint_schedule_ms (2000);
+    clint_schedule_ms (200);
 
-    uint64_t i;
-    for (i = 0; ; i++)
+    for (;;)
         printf("read_time: %ld\n", time_read ());
 }

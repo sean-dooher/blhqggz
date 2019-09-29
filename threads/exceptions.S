@@ -66,7 +66,7 @@ m_send_timer_to_s:
     li t1, -1UL
     sd t1, 0(t0)
 
-    li t0, (1 << SPIE_OFFSET)
+    li t0, (1 << ST_IRQ_OFFSET)
     csrrs x0, mip, t0
 
     RESTORE_REG t1, 0
@@ -80,6 +80,7 @@ handle_m_interrupt:
     M_MODE_INTERRUPT_ENTRY
     jal ra, machine_interrupt_handler
     M_MODE_INTERRUPT_EXIT
+    mret
 
 .text
 .align 4
@@ -101,7 +102,7 @@ s_u_timer_intr:
     j handle_s_interrupt
 .align 2
 s_s_timer_intr:
-    j handle_s_interrupt
+    j handle_s_timer_interrupt
 .align 2
 s_res_timer_intr:
     j handle_s_interrupt
@@ -150,4 +151,14 @@ handle_s_interrupt:
     csrw    sepc, t0
     RESTORE_REGISTERS_INT
 
+    sret
+
+.text
+.align 4
+handle_s_timer_interrupt:
+    DUMP_REGISTERS_INT
+
+    jal ra, timer_interrupt
+
+    RESTORE_REGISTERS_INT
     sret
