@@ -1,5 +1,6 @@
 #include "devices/platform.h"
 #include "devices/machine.h"
+#include <sbi.h>
 
 .include "asm/switch.s"
 
@@ -160,7 +161,8 @@ handle_s_timer_interrupt:
 
     jal ra, timer_interrupt
 
-    li a0, 4 # 4 == S_TIMER_CLEAR SBI call
+    li a0, SBI_CLEAR_INTR
+    li a1, ST_IRQ_OFFSET
     ecall
 
     RESTORE_REGISTERS_INT
@@ -169,8 +171,7 @@ handle_s_timer_interrupt:
 
 .text
 .align 4
-.global clear_s_timer
-clear_s_timer:
-    li t0, (1 << ST_IRQ_OFFSET)
-    csrrc x0, mip, t0
+.global clear_s_intr
+clear_s_intr:
+    csrrc x0, mip, a0
     ret

@@ -35,3 +35,6 @@
 #define SS_IRQ_OFFSET 1
 #define US_IRQ_OFFSET 0
 
+#ifndef ASSEMBLY
+#define WFI() asm volatile("wfi");
+#endif

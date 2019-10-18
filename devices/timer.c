@@ -42,5 +42,7 @@ time_set (uint64_t time, timer_mode_t mode)
 void
 timer_interrupt () 
 {
+    printf("\n======\nIN TIMER\n=====\n");
+    time_set(1000, DELAY_MS);
     return;
 }

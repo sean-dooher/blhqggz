@@ -1,17 +1,12 @@
 #pragma once
 
 #include <stdint.h>
+#include "thread.h"
 
 enum {
     S_INTERRUPTS_ON = 0x222,
     S_INTERRUPTS_OFF = 0x000
 };
-
-
-struct regfile {
-    uint64_t reg[16];
-};
-
 
 void machine_interrupt_handler(uint64_t *sp, uint64_t mcause, uint64_t mstatus, uint64_t *mepc, struct regfile *regfile);
 void supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, uint64_t *sepc, struct regfile *regfile);

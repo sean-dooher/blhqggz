@@ -1,16 +1,19 @@
+#include <stdio.h>
+#include <stdbool.h>
+
 #include "devices/serial.h"
 #include "exit.h"
 #include "threads/interrupts.h"
-#include <stdio.h>
-#include <stdbool.h>
 #include "devices/timer.h"
+#include "devices/machine.h"
 
 void
 main()
 {
     serial_init ();
     time_init ();
-    time_set (200, DELAY_MS);
+    time_set(1000, DELAY_MS);
 
-    for (;;);
+    while (true)
+        WFI ();
 }

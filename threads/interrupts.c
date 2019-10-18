@@ -3,20 +3,14 @@
 #include "interrupts.h"
 #include "devices/clint.h"
 #include "devices/timer.h"
+#include "devices/machine.h"
 #include "ecall.h"
 
 enum {
     S_MODE_ECALL = 9
 };
 
-
-enum {
-    A0 = 1,
-    A1 = 2,
-    A2 = 3
-};
-
-extern void clear_s_timer (void);
+extern void clear_s_intr (uint64_t);
 
 void
 handle_s_mode_ecall(struct regfile* regfile) {
@@ -51,9 +45,19 @@ handle_s_mode_ecall(struct regfile* regfile) {
         case TIME_READ:
             regfile->reg[A0] = clint_read_mtime();
             break;
-        case S_TIMER_CLEAR:
-            clear_s_timer ();
+        case CLEAR_INTR: {
+            uint64_t intr_type = regfile->reg[A1];
+            switch (intr_type) {
+                case SE_IRQ_OFFSET:
+                case ST_IRQ_OFFSET:
+                case SS_IRQ_OFFSET:
+                    clear_s_intr (1 << intr_type);
+                    break;
+                default:
+                    break;
+            }
             break;
+        }
         default:
             printf("Unhandled Ecall: %ld\n", ecall_code);
             while (true);

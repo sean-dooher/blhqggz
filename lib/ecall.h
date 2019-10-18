@@ -1,13 +1,14 @@
 #pragma once
 
 #include <stdint.h>
+#include "sbi.h"
 
 typedef enum {
-    TIME_INIT=0,
-    TIME_CLEAR=1,
-    TIME_SET=2,
-    TIME_READ=3,
-    S_TIMER_CLEAR=4
+    TIME_INIT=SBI_TIME_INIT,
+    TIME_CLEAR=SBI_TIME_CLEAR,
+    TIME_SET=SBI_TIME_SET,
+    TIME_READ=SBI_TIME_READ,
+    CLEAR_INTR=SBI_CLEAR_INTR
 } ECALL_NUM;
 
 uint64_t ecall (ECALL_NUM);
