@@ -20,13 +20,13 @@ clint_read_mtime (void)
 void
 clint_schedule_ms (uint64_t delay)
 {
-    clint_schedule (delay * 10000);
+    clint_schedule (delay * MS_TO_TIMER);
 }
 
 void
 clint_schedule_us (uint64_t delay)
 {
-    clint_schedule (delay * 10);
+    clint_schedule (delay * US_TO_MS_TIMER);
 }
 
 void

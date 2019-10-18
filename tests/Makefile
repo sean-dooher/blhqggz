@@ -1,7 +1,8 @@
 TEST_LIB_SRCS = test.c
 TEST_LIB_HEADERS = test.h
 
-TEST_LIST = string_unit
+TEST_LIST = string_unit \
+			timer_test
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))

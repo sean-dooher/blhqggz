@@ -6,7 +6,9 @@ typedef enum {
     SET=0,
     SET_MS=1,
     DELAY=2,
-    DELAY_MS=3
+    DELAY_MS=3,
+    PERIOD=4,
+    PERIOD_MS=5
 } timer_mode_t;
 
 void     time_init  (void);

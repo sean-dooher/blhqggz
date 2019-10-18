@@ -2,13 +2,18 @@
 #include <stdio.h>
 
 void 
-assert(int assertion, char *message)
+assert(int assertion, const char *format, ...)
 {
+    va_list va;
+    va_start(va, format);
+
     if (!assertion) {
-        print(message);
-        print("\n");   
+        vprintf(format, va);
+        printf("\n");      
         poweroff(-1);
     } else {
-        print("PASS\n");
+        printf("PASS\n");
     }
+
+    va_end(va);
 }
