@@ -4,16 +4,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "devices/timer.h"
-#include "devices/clint.h"
 
 void
 main()
 {
     serial_init ();
     time_init ();
+    time_set (200, DELAY_MS);
 
-    clint_schedule_ms (200);
-
-    for (;;)
-        printf("read_time: %ld\n", time_read ());
+    for (;;);
 }
