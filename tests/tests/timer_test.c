@@ -5,27 +5,28 @@
 #include "devices/platform.h"
 
 void
-test_reverse()
+test_time_period(uint8_t max_count, uint64_t period_ms)
 {
     time_init ();
-    time_set(10, PERIOD_MS);
+    time_set(period_ms, PERIOD_MS);
 
     uint8_t count = 0;
     uint64_t start_time = time_read();
 
-    while (count < 4) {
+    while (count < max_count) {
         WFI ();
         count += 1;
     }
 
     uint64_t curr_time = time_read();
-    uint64_t time_diff = (start_time - curr_time);
+    uint64_t time_diff = (curr_time - start_time);
+    uint64_t expected_time_max = (count + 1) * period_ms * MS_TO_TIMER;
 
-    assert(time_diff < (count + 1) * 100 * MS_TO_TIMER, "Expected time between 4s and 5s was: %d ms", curr_time);
+    assert(time_diff < expected_time_max, "Expected time < %d ticks was: %d ticks", expected_time_max, time_diff);
 }
 
 void
 run_test()
 {
-    test_reverse();
+    test_time_period(15, 10);
 }

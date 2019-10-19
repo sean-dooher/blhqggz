@@ -10,8 +10,8 @@
 #pragma error "Timer Not Specified"
 #endif
 
-static bool repeat = false;
-static uint64_t period;
+static bool repeat;
+static uint64_t period, last_period_time, curr_time;
 
 uint64_t
 time_read ()
@@ -26,6 +26,10 @@ time_init ()
 {
 #if defined(SIFIVE_CLINT)
     clint_init();
+    curr_time = clint_read_mtime();
+    last_period_time = curr_time;
+    period = 0;
+    repeat = false;
 #endif
 }
 
@@ -53,7 +57,8 @@ time_set (uint64_t time, timer_mode_t mode)
         case PERIOD: {
             repeat = true;
             period = time;
-            clint_delay (time);
+            last_period_time = clint_read_mtime();
+            clint_schedule (period + last_period_time);
         } break;
         case DELAY_MS:
             time *= MS_TO_TIMER; // FALLS THROUGH
@@ -69,14 +74,17 @@ static void
 time_restart ()
 {
 #if defined(SIFIVE_CLINT)
-    if (repeat)
-        clint_delay (period);
+    if (repeat) {
+        clint_schedule (period + last_period_time);
+        last_period_time = curr_time;
+    }
 #endif
 }
 
 void
 timer_interrupt () 
 {
+    curr_time = clint_read_mtime();
     debug("\n======\nIN TIMER\n=====\n");
 
         

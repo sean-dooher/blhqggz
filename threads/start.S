@@ -18,6 +18,10 @@ _start:
     csrr t0, mhartid
     bnez t0, _proc_sleep
 
+_enable_floats:
+    li t0, FS_CLEAN
+    csrrs x0, mstatus, t0
+
 _stack_setup:
     # set up stack pointer
     la sp, stack + STACK_SIZE

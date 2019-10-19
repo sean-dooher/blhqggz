@@ -58,6 +58,12 @@
 
 #define U_IRQS (UE_IRQ | US_IRQ | UT_IRQ)
 
+// floats
+#define FS_OFFSET 12
+#define FS_OFF    0
+#define FS_INITIAL (1 << FS_OFFSET)
+#define FS_CLEAN   (2 << FS_OFFSET)
+
 
 #ifndef __ASSEMBLER__
 #define WFI() asm volatile("wfi");
