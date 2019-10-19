@@ -1,6 +1,6 @@
 #include "devices/platform.h"
 #include "devices/machine.h"
-#include <sbi.h>
+#include <ecall.h>
 
 .include "asm/switch.s"
 
@@ -159,11 +159,12 @@ handle_s_interrupt:
 handle_s_timer_interrupt:
     DUMP_REGISTERS_INT
 
+    jal ra, time_clear
+
     jal ra, timer_interrupt
 
-    li a0, SBI_CLEAR_INTR
-    li a1, ST_IRQ_OFFSET
-    ecall
+    li a0, ST_IRQ
+    jal ra, clear_interrupt_s
 
     RESTORE_REGISTERS_INT
     sret

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "devices/timer.h"
 #include "devices/platform.h"
+#include "devices/timer.h"
+#include "devices/clint.h"
 #include "ecall.h"
 
-#if !defined(QEMU_VIRT) && !defined(SIFIVE_U)
+#if !defined(SIFIVE_CLINT)
 #pragma error "Timer Not Specified"
 #endif
 
@@ -15,55 +16,69 @@ static uint64_t period;
 uint64_t
 time_read ()
 {
-#if defined(QEMU_VIRT) || defined(SIFIVE_U)
-    return ecall (TIME_READ);
+#if defined(SIFIVE_CLINT)
+    return clint_read_mtime();
 #endif
 }
 
 void
 time_init ()
 {
-#if defined(QEMU_VIRT) || defined(SIFIVE_U)
-    ecall (TIME_INIT);
+#if defined(SIFIVE_CLINT)
+    clint_init();
 #endif
 }
 
 void
 time_clear ()
 {
-#if defined(QEMU_VIRT) || defined(SIFIVE_U)
-    ecall (TIME_CLEAR);
+#if defined(SIFIVE_CLINT)
+    clint_clear();
 #endif
 }
 
 void
 time_set (uint64_t time, timer_mode_t mode)
 {
-#if defined(QEMU_VIRT) || defined(SIFIVE_U)
+#if defined(SIFIVE_CLINT)
     switch (mode) {
+        case SET_MS:
+            time *= MS_TO_TIMER; // FALLS THROUGH
+        case SET: {
+            repeat = false;
+            clint_schedule (time);
+        } break;
         case PERIOD_MS:
-            time *= MS_TO_TIMER;
+            time *= MS_TO_TIMER; // FALLS THROUGH
         case PERIOD: {
             repeat = true;
             period = time;
-            debug("SETTING PERIODIC TIMER: %d ms\n", time / MS_TO_TIMER);
-            printf("HERE");
-            ecall2 (TIME_SET, period, DELAY);
+            clint_delay (time);
         } break;
-        default: {
+        case DELAY_MS:
+            time *= MS_TO_TIMER; // FALLS THROUGH
+        case DELAY: {
             repeat = false;
-            ecall2 (TIME_SET, time, mode);
+            clint_delay (time);
         } break;
     }
+#endif
+}
 
+static void
+time_restart ()
+{
+#if defined(SIFIVE_CLINT)
+    if (repeat)
+        clint_delay (period);
 #endif
 }
 
 void
 timer_interrupt () 
 {
-    printf("\n======\nIN TIMER\n=====\n");
-    if (repeat)
-        time_set(1000, DELAY_MS);
-    return;
+    debug("\n======\nIN TIMER\n=====\n");
+
+        
+    time_restart();
 }

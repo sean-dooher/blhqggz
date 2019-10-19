@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "interrupts.h"
+#include "devices/machine.h"
 #include "devices/clint.h"
 #include "devices/timer.h"
-#include "devices/machine.h"
+#include "devices/csr.h"
 #include "ecall.h"
 
 enum {
@@ -18,46 +19,11 @@ handle_s_mode_ecall(struct regfile* regfile) {
 
     switch (ecall_code)
     {
-        case TIME_INIT:
-            clint_init();
-            break;
-        case TIME_CLEAR:
-            clint_clear();
-            break;
-        case TIME_SET: {
-                timer_mode_t mode = regfile->reg[A2];
-                uint64_t val = regfile->reg[A1];
-                switch (mode) {
-                        case SET:
-                        break;
-                        case SET_MS:
-                        break;
-                    case DELAY:
-                        clint_schedule (val);
-                        break;
-                    case DELAY_MS:
-                        clint_schedule_ms (val);
-                        break;
-                    default:
-                        break;
-                }
-            }break;
-        case TIME_READ:
-            regfile->reg[A0] = clint_read_mtime();
-            break;
-        case CLEAR_INTR: {
-            uint64_t intr_type = regfile->reg[A1];
-            switch (intr_type) {
-                case SE_IRQ_OFFSET:
-                case ST_IRQ_OFFSET:
-                case SS_IRQ_OFFSET:
-                    clear_s_intr (1 << intr_type);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
+        case SBI_CLEAR_INTR: {
+            uint64_t intrs = regfile->reg[A1] & S_IRQS;
+            uint64_t old_val;
+            CSRRC(old_val, mip, intrs);
+        } break;
         default:
             printf("Unhandled Ecall: %ld\n", ecall_code);
             while (true);
@@ -87,4 +53,18 @@ supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, ui
     printf("supervisor interrupt: \n\tsp: 0x%p\n\tscause: 0x%lx\n\tsstatus: 0x%lx\n\tsepc: 0x%p\n", sp, scause, sstatus, sepc);
     while (true);
     return;
+}
+
+void
+clear_interrupt_m (uint32_t intrs)
+{
+    intrs &= (M_IRQS | S_IRQS | U_IRQS);
+    uint64_t old_val;
+    CSRRC(old_val, mip, intrs);
+}
+
+void
+clear_interrupt_s (uint32_t intrs)
+{
+    sbi_clear_interrupts (intrs);
 }

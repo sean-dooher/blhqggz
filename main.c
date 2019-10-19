@@ -12,7 +12,7 @@ main()
 {
     serial_init ();
     time_init ();
-    time_set(1000, DELAY_MS);
+    time_set(1000, PERIOD_MS);
 
     while (true)
         WFI ();
