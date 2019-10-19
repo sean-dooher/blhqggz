@@ -53,7 +53,9 @@ C_OBJS := $(C_SRCS:.c=.o)
 OBJS = $(addprefix $(OBJ_DIR)/, $(C_OBJS) $(S_OBJS))
 export OBJS
 
-.PHONY: all
+export TESTS ?= all
+
+.PHONY: all, tests, run-tests, check, run, run-disas, gdb, clean, debug
 all: $(KERNEL)
 
 $(OBJ_DIR)/%.o: %.S $(HEADERS)
@@ -86,10 +88,15 @@ $(BIN_DIR)/kernel.img: $(KERNEL)
 tests: $(KERNEL_BASE)
 	$(MAKE) -f tests/Makefile
 
+run-tests:
+	$(MAKE) -f tests/Makefile run
+
+check: run-tests
+
 clean:
 	rm -rf build
 
-run_disas: $(BIN_TARGET)
+run-disas: $(BIN_TARGET)
 	@$(QEMU) $(QEMU_FLAGS) -kernel $(BIN_TARGET) -d in_asm
 
 run: $(BIN_TARGET)

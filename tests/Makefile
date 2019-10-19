@@ -1,8 +1,8 @@
 TEST_LIB_SRCS = test.c
 TEST_LIB_HEADERS = test.h
 
-TEST_LIST = string_unit \
-			timer_test
+export TEST_LIST =  string_unit \
+					timer_test
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))
@@ -36,6 +36,6 @@ $(TEST_KERNEL_DIR)/%.elf: $(TEST_LIB_OBJS) $(TEST_OBJS) $(KERNEL_BASE)
 	$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(TEST_LIB_OBJS) $(TEST_OBJ_DIR)/$(notdir $(patsubst %.elf, %.o, $@)) -o $@
 
 run: $(TEST_KERNELS)
-	$(QEMU) $(QEMU_FLAGS) -kernel $(TARGET)
+	$(TEST_DIR)/run-tests.sh
 
 $(shell mkdir -p $(TEST_DIRS))
