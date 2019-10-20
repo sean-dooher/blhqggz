@@ -8,20 +8,12 @@ test_reverse()
     char before[] = "atoi";
     char expected[] = "iota";
 
-    print("Before: ");
-    print(before);
-    print("\n");
-
+    printf("Before: %s\n", before);
     reverse(before, 4);
 
-    print("After: ");
-    print(before);
-    print("\n");
+    printf("After: %s\n", before);
 
-
-    print("Expected: ");
-    print(expected);
-    print("\n");
+    printf("Expected: %s\n", expected);
 
     assert(strcmp(before, expected) == 0, "Expected before to match");
 }

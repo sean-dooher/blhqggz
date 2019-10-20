@@ -29,4 +29,5 @@ void
 run_test()
 {
     test_time_period(15, 10);
+    test_time_period(125, 1);
 }

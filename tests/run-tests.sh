@@ -18,9 +18,7 @@ echo $DELIM
 
 for test in $TESTS; do
     let total++
-    make run TARGET=test/$test.elf 1>/dev/null
-    let res=$?
-    if [[ $res == 0 ]]; then
+    if (ulimit -t 5; make run TARGET=test/$test.elf 1>/dev/null); then
         let n_passed++
         echo -e "$GREEN""PASS: $test""$WHITE"
     else

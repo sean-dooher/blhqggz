@@ -2,7 +2,8 @@ TEST_LIB_SRCS = test.c
 TEST_LIB_HEADERS = test.h
 
 export TEST_LIST =  string_unit \
-					timer_test
+					timer_test \
+					bootable
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))
