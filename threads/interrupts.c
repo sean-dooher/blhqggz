@@ -15,12 +15,12 @@ extern void clear_s_intr (uint64_t);
 
 void
 handle_s_mode_ecall(struct regfile* regfile) {
-    ECALL_NUM ecall_code = regfile->reg[A0];
+    ECALL_NUM ecall_code = REGFILE(*regfile, A0);
 
     switch (ecall_code)
     {
         case SBI_CLEAR_INTR: {
-            uint64_t intrs = regfile->reg[A1] & S_IRQS;
+            uint64_t intrs =  REGFILE(*regfile, A1) & S_IRQS;
             uint64_t old_val;
             CSRRC(old_val, mip, intrs);
         } break;

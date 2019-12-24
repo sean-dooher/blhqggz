@@ -88,7 +88,7 @@ $(BIN_DIR)/kernel.img: $(KERNEL)
 tests: $(KERNEL_BASE)
 	$(MAKE) -f tests/Makefile
 
-run-tests:
+run-tests: all
 	$(MAKE) -f tests/Makefile run
 
 check: run-tests
