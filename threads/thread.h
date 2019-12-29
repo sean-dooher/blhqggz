@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 #include <riscv.h>
 
@@ -8,7 +10,7 @@
 #define REGFILE(regfile, register) ((regfile).reg[REGFILE_N(register)])
 #define REGFILE_N(register) (regfile_n[register])
 
-uint8_t regfile_n[32] = {
+static const uint8_t regfile_n[32] = {
     -1, // X0
     0, // RA
     -1, // SP

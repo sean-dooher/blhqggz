@@ -25,7 +25,7 @@ PLATFORM ?= virt
 # Tool Options
 export LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
 export CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -DDEBUG -g
-export QEMU_FLAGS = -M $(PLATFORM) -cpu rv64gcsu-v1.10.0 -bios none -display none -serial stdio -serial null
+export QEMU_FLAGS = -M $(PLATFORM) -cpu rv64gcsu-v1.10.0 -display none -serial stdio
 
 # Source files
 
@@ -33,9 +33,9 @@ LIB_DIR = lib/
 
 C_SRCS =
 
-HEADERS = 
+HEADERS =
 
-S_SRCS = 
+S_SRCS =
 
 SRC_SUBDIRS = threads \
 			  lib \
@@ -88,7 +88,7 @@ $(BIN_DIR)/kernel.img: $(KERNEL)
 tests: $(KERNEL_BASE)
 	$(MAKE) -f tests/Makefile
 
-run-tests: all
+run-tests: tests
 	$(MAKE) -f tests/Makefile run
 
 check: run-tests

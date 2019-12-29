@@ -1,3 +1,5 @@
+#pragma once
+
 // INIT
 #define STACK_SIZE 4096
 

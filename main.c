@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 #include "devices/serial.h"
-#include "exit.h"
 #include "threads/interrupts.h"
 #include "devices/timer.h"
 #include "devices/machine.h"

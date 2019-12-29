@@ -11,8 +11,6 @@ assert(int assertion, const char *format, ...)
         vprintf(format, va);
         printf("\n");      
         poweroff(-1);
-    } else {
-        printf("PASS\n");
     }
 
     va_end(va);
