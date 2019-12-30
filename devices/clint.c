@@ -17,6 +17,7 @@ clint_init (void)
 void
 clint_schedule (uint64_t time)
 {
+    debug ("TIMER SCHEDULE: 0x%lx\n", time);
     CLINT_TIMECMP[0] = time;
 }
 
