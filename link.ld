@@ -40,7 +40,7 @@ SECTIONS
     . = ALIGN(PAGE_SIZE);
 
     PROVIDE (_free_mem_start = .);
-    . = . + PAGE_SIZE * 256K;
+    . = . + PAGE_SIZE * 30K;
     PROVIDE (_free_mem_end = .);
     
     PROVIDE (_mem_end = .);

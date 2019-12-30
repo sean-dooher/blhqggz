@@ -9,14 +9,16 @@ EXPORT_LIB_HEADERS = alloca.h \
 					 printf.h \
 					 ecall.h \
 					 stdio.h \
-					 bitmap.h
+					 bitmap.h \
+					 palloc.h
 
 EXPORT_LIB_C_SRCS = string.c \
 					exit.c \
 					printf.c \
 					ecall.c \
 					stdio.c \
-					bitmap.c
+					bitmap.c \
+					palloc.c
 
 EXPORT_LIB_S_SRCS = asm/switch.S
 

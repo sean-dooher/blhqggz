@@ -37,7 +37,7 @@ bitmap_get (bitmap_t *bitmap, size_t pos)
 void
 bitmap_set (bitmap_t *bitmap, size_t pos, size_t n)
 {
-    size_t first_entry = pos / bitmap_entry_size;
+    size_t first_entry = pos / bitmap_entry_size_bits;
     size_t size = pos + n;
     bitmap_entry_type *map = bitmap->bits + first_entry;
 
@@ -60,7 +60,7 @@ bitmap_set (bitmap_t *bitmap, size_t pos, size_t n)
 void
 bitmap_clear (bitmap_t *bitmap, size_t pos, size_t n)
 {
-    size_t first_entry = pos / bitmap_entry_size;
+    size_t first_entry = pos / bitmap_entry_size_bits;
     size_t size = pos + n;
     bitmap_entry_type *map = bitmap->bits + first_entry;
 
@@ -83,20 +83,17 @@ bitmap_clear (bitmap_t *bitmap, size_t pos, size_t n)
 size_t
 bitmap_find_and_set (bitmap_t *bitmap, size_t n)
 {
-    int64_t last_one = -1;
-    for (int i = 0; i < n / bitmap_entry_size; i++) {
-        bitmap_entry_type entry = bitmap->bits[i];
-        for (int j = 0; j < bitmap_entry_size_bits; j++) {
-            int64_t curr_pos = i * bitmap_entry_size_bits + j;
-            if (curr_pos - last_one >= n) {
-                bitmap_set (bitmap, last_one + 1, n);
-                return last_one + 1;
-            }
-            if (entry & (1 << j)) {
-                last_one = curr_pos;
-            }
+    int64_t last_one = -1, curr_pos = 0;
+    while (curr_pos <= bitmap->size) {
+        if (curr_pos - last_one > n) {
+            bitmap_set (bitmap, last_one + 1, n);
+            return last_one + 1;
         }
-    }
 
+        if (bitmap_get(bitmap, curr_pos) == 1) {
+            last_one = curr_pos;
+        }
+        curr_pos++;
+    }
     return ~0UL;
 }

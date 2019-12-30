@@ -19,8 +19,8 @@ test_bitmap()
         assert(bitmap_get(bitmap, i) == 0, "Expected new bitmap to be all zeros");
     }
 
-    size_t ret_val = bitmap_find_and_set(bitmap, 123);
-    assert (ret_val != ~0UL, "Bitmap should be able to find 123 contigous free entries");
+    size_t bm_large_span = bitmap_find_and_set(bitmap, 123);
+    assert (bm_large_span != ~0UL, "Bitmap should be able to find 123 contigous free entries");
 
     size_t num_ones = 0;
     for (size_t i = 0; i < bitmap_size(bitmap); i++) {
@@ -29,6 +29,14 @@ test_bitmap()
     }
 
     assert(num_ones == 123, "Expected to find 123 used entries (found %lu)", num_ones);
+
+    assert (bitmap_find_and_set(bitmap, 1) != ~0UL, "Bitmap should be able to find 1 contigous free entries");
+    assert (bitmap_find_and_set(bitmap, 1) != ~0UL, "Bitmap should be able to find 1 contigous free entries");
+
+    bitmap_clear(bitmap, bm_large_span + 32, 15);
+    
+    size_t bm_realloc = bitmap_find_and_set(bitmap, 1);
+    assert (bm_realloc == bm_large_span + 32, "Bitmap should be able to realloc in old space (old: %ld, new: %ld)", bm_large_span + 32, bm_realloc);
 }
 
 void
