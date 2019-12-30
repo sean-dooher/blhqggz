@@ -2,6 +2,8 @@ OUTPUT_ARCH( "riscv" )
 
 ENTRY( _start )
 
+PAGE_SIZE = 4K;
+
 SECTIONS
 {
     . =  0x80000000;
@@ -27,13 +29,19 @@ SECTIONS
       PROVIDE (_data_end = .);
     }
 
-    .bss (NOLOAD) : {
-        . = ALIGN(16);
-        PROVIDE(__bss_start = .);
-        *(.bss .bss.*);
-        *(COMMON);
-        PROVIDE(__bss_end = .);
+    .bss (NOLOAD) : ALIGN(PAGE_SIZE) {
+      . = ALIGN(16);
+      PROVIDE(__bss_start = .);
+      *(.bss .bss.*);
+      *(COMMON);
+      PROVIDE(__bss_end = .);
     }
+
+    . = ALIGN(PAGE_SIZE);
+
+    PROVIDE (_free_mem_start = .);
+    . = . + PAGE_SIZE * 256K;
+    PROVIDE (_free_mem_end = .);
     
     PROVIDE (_mem_end = .);
 

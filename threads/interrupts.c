@@ -14,7 +14,8 @@ enum {
 extern void clear_s_intr (uint64_t);
 
 void
-handle_s_mode_ecall(struct regfile* regfile) {
+handle_s_mode_ecall(struct regfile* regfile) 
+{
     ECALL_NUM ecall_code = REGFILE(*regfile, A0);
 
     switch (ecall_code)

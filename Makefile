@@ -38,6 +38,7 @@ HEADERS =
 S_SRCS =
 
 SRC_SUBDIRS = threads \
+			  vm \
 			  lib \
 			  devices
 

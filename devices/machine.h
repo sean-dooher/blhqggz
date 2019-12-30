@@ -2,6 +2,7 @@
 
 // INIT
 #define STACK_SIZE 4096
+#define PAGE_SIZE 4096
 
 // PMP
 #define PMP_R 0x01

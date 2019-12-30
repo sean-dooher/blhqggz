@@ -23,8 +23,8 @@ _enable_floats:
     csrrs x0, mstatus, t0
 
 _stack_setup:
-    # set up stack pointer
-    la sp, stack + STACK_SIZE
+    # set up init_stack pointer
+    la sp, init_stack + STACK_SIZE
 
 _smode_interrupt_delegation:
     # defer all supervisor interrupts to S MODE
@@ -114,10 +114,9 @@ m_interrupt_vector_early:
 
 .bss
 .align 4
-.global stack
-stack:
+.global init_stack
+init_stack:
     .skip STACK_SIZE
-
 
 .data
 .global asm_printf_ld
