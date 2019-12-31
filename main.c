@@ -14,5 +14,6 @@ main()
     vm_init_early ();
     serial_init ();
 
-    printf("DONE\n");
+    page_t *page = alloc_page(PALLOC_NO_FLAGS);
+    printf("DONE: 0x%lx\n", page);
 }

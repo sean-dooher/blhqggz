@@ -5,6 +5,12 @@
 
 extern const void *KERNEL_TEXT_BASE;
 extern const void *KERNEL_TEXT_END;
+extern const void *KERNEL_RODATA_BASE;
+extern const void *KERNEL_RODATA_END;
+extern const void *KERNEL_DATA_BASE;
+extern const void *KERNEL_DATA_END;
+extern const void *KERNEL_BSS_BASE;
+extern const void *KERNEL_BSS_END;
 extern const void *FREE_MEM_BASE;
 extern const void *FREE_MEM_END;
 extern uint32_t N_FREE_PAGES;

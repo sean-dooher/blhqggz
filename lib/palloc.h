@@ -7,6 +7,8 @@
 #define PALLOC_CLEAR 0x1
 #define PALLOC_NO_FLAGS 0x0
 
+extern uint64_t N_PALLOC_BITMAP_PAGES;
+
 typedef struct page {
     uint8_t data[PAGE_SIZE];
 } page_t;

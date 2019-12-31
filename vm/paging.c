@@ -7,17 +7,37 @@
 #include "devices/platform.h"
 #include "devices/test.h"
 
-extern uint8_t _free_mem_start;
-extern uint8_t _free_mem_end;
 extern uint8_t _text_base;
 extern uint8_t _text_end;
+extern uint8_t _rodata_base;
+extern uint8_t _rodata_end;
+extern uint8_t _data_base;
+extern uint8_t _data_end;
+extern uint8_t __bss_base;
+extern uint8_t __bss_end;
+extern uint8_t _free_mem_base;
+extern uint8_t _free_mem_end;
 extern uint8_t init_stack;
 
 const void *KERNEL_TEXT_BASE = &_text_base;
 const void *KERNEL_TEXT_END = &_text_end;
-const void *FREE_MEM_BASE = &_free_mem_start;
+const void *KERNEL_RODATA_BASE = &_rodata_base;
+const void *KERNEL_RODATA_END = &_rodata_end;
+const void *KERNEL_DATA_BASE = &_data_base;
+const void *KERNEL_DATA_END = &_data_end;
+const void *KERNEL_BSS_BASE = &__bss_base;
+const void *KERNEL_BSS_END = &__bss_end;
+const void *FREE_MEM_BASE = &_free_mem_base;
 const void *FREE_MEM_END = &_free_mem_end;
 uint32_t N_FREE_PAGES;
+
+static inline void
+vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t perm)
+{
+    for (int i = 0; i < n_pages; i++) {
+        vm_install_page (table, (paddr_t) &base[i], (vaddr_t) &base[i], perm);
+    }
+}
 
 void
 vm_init_early () 
@@ -25,26 +45,34 @@ vm_init_early ()
     N_FREE_PAGES = N_PAGES (FREE_MEM_END - FREE_MEM_BASE);
     palloc_init ();
     
-    uint64_t rx_perm = PTE_R_MASK | PTE_X_MASK | PTE_A_MASK;
-    uint64_t rwx_perm = PTE_R_MASK | PTE_W_MASK | PTE_X_MASK | PTE_A_MASK | PTE_D_MASK;
+    uint64_t r_perm = PTE_R_MASK | PTE_A_MASK;
+    uint64_t rx_perm = r_perm | PTE_X_MASK;
+    uint64_t rw_perm = r_perm | PTE_W_MASK | PTE_D_MASK;
+    uint64_t rwx_perm = rw_perm | rx_perm;
 
     // create root page table
     page_table_t *table = (page_table_t *) alloc_page(PALLOC_CLEAR);
     vm_install_page (table, (paddr_t) table, (vaddr_t) table, rwx_perm);
 
-    // set up ID map for kernel pages
-    page_t *kernel_pages = (page_t *) KERNEL_TEXT_BASE;
-    uint8_t n_kernel_pages = N_PAGES (KERNEL_TEXT_END - KERNEL_TEXT_BASE);
-    for (int i = 0; i < n_kernel_pages; i++) {
-        vm_install_page (table, (paddr_t) &kernel_pages[i], (vaddr_t) &kernel_pages[i], rx_perm);
-    }
+    // install kernel text
+    vm_install_id_map (table, (page_t *) KERNEL_TEXT_BASE, N_PAGES(KERNEL_TEXT_END - KERNEL_TEXT_BASE), rx_perm);
+
+    // install kernel rodata
+    vm_install_id_map (table, (page_t *) KERNEL_RODATA_BASE, N_PAGES(KERNEL_RODATA_END - KERNEL_RODATA_BASE), r_perm);
+
+    // install kernel data
+    vm_install_id_map (table, (page_t *) KERNEL_DATA_BASE, N_PAGES(KERNEL_DATA_END - KERNEL_DATA_BASE), rw_perm);
+
+    // install kernel data
+    vm_install_id_map (table, (page_t *) KERNEL_BSS_BASE, N_PAGES(KERNEL_BSS_END - KERNEL_BSS_BASE), rw_perm);
 
     // set up ID map for initial kernel stack
-    page_t *stack_pages = (page_t *) PAGE_DOWN(FREE_MEM_END);
     uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
-    for (int i = n_stack_pages; i > 0 ; i--) {
-        vm_install_page (table, (paddr_t) stack_pages - i, (vaddr_t) stack_pages - i, rwx_perm);
-    }
+    page_t *stack_pages = ((page_t *) PAGE_DOWN(FREE_MEM_END)) - n_stack_pages;
+    vm_install_id_map (table, stack_pages, n_stack_pages, rwx_perm);
+
+    // set up ID map for bitmap metadata
+    vm_install_id_map (table, (page_t *) FREE_MEM_BASE, N_PALLOC_BITMAP_PAGES, rwx_perm);
 
     // set up ID map for MMIO
     vm_install_page (table, CLINT_BASE, CLINT_BASE, rwx_perm);
@@ -58,6 +86,7 @@ vm_init_early ()
 void
 vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm)
 {
+    printf("PHYS: 0x%lx to VIRT: 0x%lx\n", phys_page, virt_page);
     page_table_t *root = table;
     for (int i = PT_LEVELS - 1; i > 0; i--) {
         uint64_t vpn = VPN_N(virt_page, i);

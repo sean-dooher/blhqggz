@@ -8,6 +8,8 @@ static bitmap_t *mem_bitmap;
 
 static page_t *FREE_PAGE_BASE;
 
+uint64_t N_PALLOC_BITMAP_PAGES;
+
 void
 palloc_init (void)
 {
@@ -16,7 +18,8 @@ palloc_init (void)
     mem_bitmap = (bitmap_t *) FREE_MEM_BASE;
     bitmap_init(mem_bitmap, N_FREE_PAGES);
 
-    bitmap_set(mem_bitmap, 0, N_PAGES(sizeof(mem_bitmap) + (N_FREE_PAGES >> 3) + 1));
+    N_PALLOC_BITMAP_PAGES = N_PAGES(sizeof(mem_bitmap) + (N_FREE_PAGES >> 3) + 1);
+    bitmap_set(mem_bitmap, 0, N_PALLOC_BITMAP_PAGES);
 
     uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
     bitmap_set(mem_bitmap, bitmap_size(mem_bitmap) - n_stack_pages, n_stack_pages);

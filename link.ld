@@ -15,7 +15,7 @@ SECTIONS
       PROVIDE (_text_end = .);
     }
 
-    .rodata : {
+    .rodata : ALIGN(PAGE_SIZE) {
       PROVIDE (_rodata_base = .);
       *(.rodata .rodata.* .gnu.linkonce.r*);
       PROVIDE (_rodata_end = .);
@@ -23,7 +23,7 @@ SECTIONS
 
     PROVIDE(_data = .);
     
-    .data : {
+    .data : ALIGN(PAGE_SIZE) {
       PROVIDE (_data_base = .);
       *(.data .data.* .gnu.linkonce.d*);
       PROVIDE (_data_end = .);
@@ -31,7 +31,7 @@ SECTIONS
 
     .bss (NOLOAD) : ALIGN(PAGE_SIZE) {
       . = ALIGN(16);
-      PROVIDE(__bss_start = .);
+      PROVIDE(__bss_base = .);
       *(.bss .bss.*);
       *(COMMON);
       PROVIDE(__bss_end = .);
@@ -39,7 +39,7 @@ SECTIONS
 
     . = ALIGN(PAGE_SIZE);
 
-    PROVIDE (_free_mem_start = .);
+    PROVIDE (_free_mem_base = .);
     . = . + PAGE_SIZE * 30K;
     PROVIDE (_free_mem_end = .);
     
