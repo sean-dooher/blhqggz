@@ -4,7 +4,8 @@ TEST_LIB_HEADERS = test.h
 export TEST_LIST =  string_unit \
 					timer_test \
 					bootable \
-					bitmap_test
+					bitmap_test \
+					vm_test
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))

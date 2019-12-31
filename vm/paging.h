@@ -35,6 +35,12 @@ extern uint32_t N_FREE_PAGES;
 #define PTE_A_MASK 0x40
 #define PTE_D_MASK 0x80
 #define PTE_RSW_MASK 0x300
+#define PTE_R_PERM (PTE_R_MASK | PTE_A_MASK)
+#define PTE_X_PERM (PTE_X_MASK)
+#define PTE_W_PERM (PTE_W_MASK | PTE_D_MASK)
+#define PTE_RX_PERM (PTE_R_PERM | PTE_X_PERM)
+#define PTE_RW_PERM (PTE_R_PERM | PTE_W_PERM)
+#define PTE_RWX_PERM (PTE_R_PERM | PTE_W_PERM | PTE_X_PERM)
 
 #define PTE_PPN0_OFFSET 10
 #define PTE_PPN1_OFFSET 19
@@ -52,6 +58,7 @@ extern uint32_t N_FREE_PAGES;
 
 #define SATP_MODE(mode) (((uint64_t) mode) << 60)
 #define SATP_ASID(asid) (((uint64_t) asid) << 44)
+#define SATP_PPN_MASK 0xfffffffffff
 
 typedef uint64_t pte_t;
 typedef uint64_t paddr_t;
@@ -66,3 +73,4 @@ void vm_init_early (void);
 void vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm);
 
 void vm_activate_address_space (page_table_t *root, uint16_t asid);
+page_table_t *vm_get_current_table (void);

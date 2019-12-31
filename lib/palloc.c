@@ -33,6 +33,10 @@ alloc_n_pages (size_t n, uint8_t flags)
         page_t *pages = &FREE_PAGE_BASE[offset];
         if (flags & PALLOC_CLEAR) {
             for (int i = 0; i < n; i++) {
+                // if (mmu_enabled)
+                // {
+                //     // vm_install_id_map (vm_get_current_table(), pages, 1, PTE_RW_PERM);
+                // }
                 memset(pages[i].data, 0, PAGE_SIZE);
             }
         }

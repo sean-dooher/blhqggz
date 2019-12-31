@@ -44,40 +44,35 @@ vm_init_early ()
 {
     N_FREE_PAGES = N_PAGES (FREE_MEM_END - FREE_MEM_BASE);
     palloc_init ();
-    
-    uint64_t r_perm = PTE_R_MASK | PTE_A_MASK;
-    uint64_t rx_perm = r_perm | PTE_X_MASK;
-    uint64_t rw_perm = r_perm | PTE_W_MASK | PTE_D_MASK;
-    uint64_t rwx_perm = rw_perm | rx_perm;
 
     // create root page table
     page_table_t *table = (page_table_t *) alloc_page(PALLOC_CLEAR);
-    vm_install_page (table, (paddr_t) table, (vaddr_t) table, rwx_perm);
+    vm_install_page (table, (paddr_t) table, (vaddr_t) table, PTE_RW_PERM);
 
     // install kernel text
-    vm_install_id_map (table, (page_t *) KERNEL_TEXT_BASE, N_PAGES(KERNEL_TEXT_END - KERNEL_TEXT_BASE), rx_perm);
+    vm_install_id_map (table, (page_t *) KERNEL_TEXT_BASE, N_PAGES(KERNEL_TEXT_END - KERNEL_TEXT_BASE), PTE_RX_PERM);
 
     // install kernel rodata
-    vm_install_id_map (table, (page_t *) KERNEL_RODATA_BASE, N_PAGES(KERNEL_RODATA_END - KERNEL_RODATA_BASE), r_perm);
+    vm_install_id_map (table, (page_t *) KERNEL_RODATA_BASE, N_PAGES(KERNEL_RODATA_END - KERNEL_RODATA_BASE), PTE_R_PERM);
 
     // install kernel data
-    vm_install_id_map (table, (page_t *) KERNEL_DATA_BASE, N_PAGES(KERNEL_DATA_END - KERNEL_DATA_BASE), rw_perm);
+    vm_install_id_map (table, (page_t *) KERNEL_DATA_BASE, N_PAGES(KERNEL_DATA_END - KERNEL_DATA_BASE), PTE_RW_PERM);
 
-    // install kernel data
-    vm_install_id_map (table, (page_t *) KERNEL_BSS_BASE, N_PAGES(KERNEL_BSS_END - KERNEL_BSS_BASE), rw_perm);
+    // install kernel bss
+    vm_install_id_map (table, (page_t *) KERNEL_BSS_BASE, N_PAGES(KERNEL_BSS_END - KERNEL_BSS_BASE), PTE_RW_PERM);
 
     // set up ID map for initial kernel stack
     uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
     page_t *stack_pages = ((page_t *) PAGE_DOWN(FREE_MEM_END)) - n_stack_pages;
-    vm_install_id_map (table, stack_pages, n_stack_pages, rwx_perm);
+    vm_install_id_map (table, stack_pages, n_stack_pages, PTE_RWX_PERM);
 
     // set up ID map for bitmap metadata
-    vm_install_id_map (table, (page_t *) FREE_MEM_BASE, N_PALLOC_BITMAP_PAGES, rwx_perm);
+    vm_install_id_map (table, (page_t *) FREE_MEM_BASE, N_PALLOC_BITMAP_PAGES, PTE_RWX_PERM);
 
     // set up ID map for MMIO
-    vm_install_page (table, CLINT_BASE, CLINT_BASE, rwx_perm);
-    vm_install_page (table, UART0_BASE, UART0_BASE, rwx_perm);
-    vm_install_page (table, TEST_CTRL_ADDR, TEST_CTRL_ADDR, rwx_perm);
+    vm_install_page (table, CLINT_BASE, CLINT_BASE, PTE_RWX_PERM);
+    vm_install_page (table, UART0_BASE, UART0_BASE, PTE_RWX_PERM);
+    vm_install_page (table, TEST_CTRL_ADDR, TEST_CTRL_ADDR, PTE_RWX_PERM);
 
 
     vm_activate_address_space (table, 0x0);
@@ -135,4 +130,13 @@ vm_walk_table (page_table_t *root, vaddr_t virt_addr, int level)
     } else {
         return vm_walk_table ((page_table_t *) paddr, virt_addr, level - 1);
     }
+}
+
+page_table_t *
+vm_get_current_table (void)
+{
+    uint64_t satp;
+    CSRR(satp, satp);
+
+    return (page_table_t *) ((satp & SATP_PPN_MASK) << PAGE_OFFSET);
 }
