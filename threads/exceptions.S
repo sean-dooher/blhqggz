@@ -143,7 +143,8 @@ handle_s_interrupt:
     csrr    a1, scause
     csrr    a2, sstatus
     csrr    a3, sepc
-    mv      a4, sp
+    csrr    a4, stval
+    mv      a5, sp
 
     jal ra, supervisor_interrupt_handler
 

@@ -5,11 +5,23 @@
 #include "devices/clint.h"
 #include "devices/timer.h"
 #include "devices/csr.h"
+#include "vm/paging.h"
 #include "ecall.h"
 
-enum {
-    S_MODE_ECALL = 9
-};
+typedef enum {
+    INST_ALIGN = 0,
+    INST_ACCESS = 1,
+    INST_ILLEGAL = 2,
+    LOAD_ALIGN = 4,
+    LOAD_ACCESS = 5,
+    STORE_ALIGN = 6,
+    STORE_ACCESS = 7,
+    U_ECALL = 8,
+    S_ECALL = 9,
+    INST_PAGE_FAULT = 12,
+    LOAD_PAGE_FAULT = 13,
+    STORE_PAGE_FAULT = 15
+} exception_code_t;
 
 extern void clear_s_intr (uint64_t);
 
@@ -37,7 +49,7 @@ machine_interrupt_handler(uint64_t *sp, uint64_t mcause, uint64_t mstatus, uint6
 {
 
     switch (mcause) {
-        case S_MODE_ECALL:
+        case S_ECALL:
             handle_s_mode_ecall(regfile);
             break;
         default:
@@ -49,10 +61,32 @@ machine_interrupt_handler(uint64_t *sp, uint64_t mcause, uint64_t mstatus, uint6
 }
 
 void
-supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, uint64_t *sepc, struct regfile *regfile)
+supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, uint64_t *sepc, uint64_t stval, struct regfile *regfile)
 {
-    printf("supervisor interrupt: \n\tsp: 0x%p\n\tscause: 0x%lx\n\tsstatus: 0x%lx\n\tsepc: 0x%p\n", sp, scause, sstatus, sepc);
-    while (true);
+    switch (scause) {
+        case INST_PAGE_FAULT:
+        {
+            printf ("Page fault accessing instruction at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            while (true);
+            break;
+        }
+        case LOAD_PAGE_FAULT:
+        {
+            printf ("Page fault with data load at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            while (true);
+            break;
+        }
+        case STORE_PAGE_FAULT:
+        {
+            printf ("Page fault with data store at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            break;
+        }
+        default:
+        {
+            printf("unknown supervisor interrupt: \n\tsp: 0x%p\n\tscause: 0x%lx\n\tsstatus: 0x%lx\n\tsepc: 0x%p\n\tstval: 0x%lx\n", sp, scause, sstatus, sepc, stval);
+            while (true);
+        }
+    }
     return;
 }
 
