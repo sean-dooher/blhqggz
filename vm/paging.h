@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "devices/machine.h"
 
 extern const void *KERNEL_TEXT_BASE;
@@ -14,6 +15,8 @@ extern const void *KERNEL_BSS_END;
 extern const void *FREE_MEM_BASE;
 extern const void *FREE_MEM_END;
 extern uint32_t N_FREE_PAGES;
+
+extern bool mmu_enabled;
 
 #define N_PAGES(SIZE) (((SIZE) + (PAGE_SIZE - 1)) / PAGE_SIZE)
 
@@ -74,3 +77,11 @@ void vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page,
 
 void vm_activate_address_space (page_table_t *root, uint16_t asid);
 page_table_t *vm_get_current_table (void);
+
+static inline void
+vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t perm)
+{
+    for (int i = 0; i < n_pages; i++) {
+        vm_install_page (table, (paddr_t) &base[i], (vaddr_t) &base[i], perm);
+    }
+}

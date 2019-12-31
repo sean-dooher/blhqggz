@@ -31,17 +31,12 @@ const void *FREE_MEM_BASE = &_free_mem_base;
 const void *FREE_MEM_END = &_free_mem_end;
 uint32_t N_FREE_PAGES;
 
-static inline void
-vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t perm)
-{
-    for (int i = 0; i < n_pages; i++) {
-        vm_install_page (table, (paddr_t) &base[i], (vaddr_t) &base[i], perm);
-    }
-}
+bool mmu_enabled;
 
 void
 vm_init_early () 
 {
+    mmu_enabled = false;
     N_FREE_PAGES = N_PAGES (FREE_MEM_END - FREE_MEM_BASE);
     palloc_init ();
 
@@ -76,12 +71,13 @@ vm_init_early ()
 
 
     vm_activate_address_space (table, 0x0);
+    mmu_enabled = true;
 }
 
 void
 vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm)
 {
-    printf("PHYS: 0x%lx to VIRT: 0x%lx\n", phys_page, virt_page);
+    debug("PHYS: 0x%lx to VIRT: 0x%lx\n", phys_page, virt_page);
     page_table_t *root = table;
     for (int i = PT_LEVELS - 1; i > 0; i--) {
         uint64_t vpn = VPN_N(virt_page, i);
@@ -106,8 +102,9 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
 void
 vm_activate_address_space (page_table_t *root, uint16_t asid)
 {
+    // mmu_enabled = true;
     uint64_t satp = SATP_MODE(0x8) | SATP_ASID(asid) | ((paddr_t) root >> PAGE_OFFSET);
-    printf("SATP: 0x%lx\n", satp);
+    debug("SATP: 0x%lx\n", satp);
 
     asm volatile ("sfence.vma");
     CSRW(satp, satp);

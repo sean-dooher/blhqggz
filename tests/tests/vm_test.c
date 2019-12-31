@@ -18,7 +18,7 @@ void test_basic_vm ()
     vm_install_page (vm_get_current_table(), (paddr_t) phys_page, (vaddr_t) virt_page2, PTE_RW_PERM);
 
     for (int i = 0; i < sizeof(virt_page1->data); i++) {
-        virt_page1->data[i] = 0xFA;
+        virt_page1->data[i] = i % 255;
         assert (virt_page1->data[i] == virt_page2->data[i], "Change in one page should be reflected in other");
     }
 }
