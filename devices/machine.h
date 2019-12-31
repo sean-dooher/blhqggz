@@ -1,8 +1,8 @@
 #pragma once
 
 // INIT
-#define STACK_SIZE 4096
 #define PAGE_SIZE 4096
+#define STACK_SIZE PAGE_SIZE
 
 // PMP
 #define PMP_R 0x01

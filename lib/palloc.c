@@ -1,4 +1,6 @@
 #include <bitmap.h>
+#include <string.h>
+
 #include "palloc.h"
 #include "vm/paging.h"
 
@@ -15,14 +17,23 @@ palloc_init (void)
     bitmap_init(mem_bitmap, N_FREE_PAGES);
 
     bitmap_set(mem_bitmap, 0, N_PAGES(sizeof(mem_bitmap) + (N_FREE_PAGES >> 3) + 1));
+
+    uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
+    bitmap_set(mem_bitmap, bitmap_size(mem_bitmap) - n_stack_pages, n_stack_pages);
 }
 
 page_t *
-alloc_n_pages (size_t n)
+alloc_n_pages (size_t n, uint8_t flags)
 {
     size_t offset = bitmap_find_and_set (mem_bitmap, n);
     if (offset != ~0UL) {
-        return &FREE_PAGE_BASE[offset];
+        page_t *pages = &FREE_PAGE_BASE[offset];
+        if (flags & PALLOC_CLEAR) {
+            for (int i = 0; i < n; i++) {
+                memset(pages[i].data, 0, PAGE_SIZE);
+            }
+        }
+        return pages;
     }
 
     return NULL;

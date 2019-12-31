@@ -74,6 +74,16 @@ memcpy(void *dst, const void *src, size_t n)
     return dst;
 }
 
+void *
+memset(void *src, int c, size_t n)
+{
+    char *csrc = (char *) src;
+    for (int i = 0; i < n; i++)
+        *csrc++ = c;
+
+    return src;
+}
+
 char *
 reverse(char *str, size_t len)
 {

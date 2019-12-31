@@ -24,7 +24,7 @@ _enable_floats:
 
 _stack_setup:
     # set up init_stack pointer
-    la sp, init_stack + STACK_SIZE
+    la sp, _free_mem_end
 
 _smode_interrupt_delegation:
     # defer all supervisor interrupts to S MODE
@@ -111,12 +111,6 @@ software_interrupt_s:
 .align 2
 m_interrupt_vector_early:
     j .
-
-.bss
-.align 4
-.global init_stack
-init_stack:
-    .skip STACK_SIZE
 
 .data
 .global asm_printf_ld
