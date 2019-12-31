@@ -74,6 +74,7 @@ typedef struct page_table {
 
 void vm_init_early (void);
 void vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm);
+void vm_install_kernel (page_table_t *table);
 
 void vm_activate_address_space (page_table_t *root, uint16_t asid);
 page_table_t *vm_get_current_table (void);

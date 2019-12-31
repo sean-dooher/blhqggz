@@ -44,6 +44,21 @@ vm_init_early ()
     page_table_t *table = (page_table_t *) alloc_page(PALLOC_CLEAR);
     vm_install_page (table, (paddr_t) table, (vaddr_t) table, PTE_RW_PERM);
 
+    // install kernel ID map
+    vm_install_kernel (table);
+
+    // set up ID map for initial kernel stack
+    uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
+    page_t *stack_pages = ((page_t *) PAGE_DOWN(FREE_MEM_END)) - n_stack_pages;
+    vm_install_id_map (table, stack_pages, n_stack_pages, PTE_RWX_PERM);
+
+    vm_activate_address_space (table, 0x0);
+    mmu_enabled = true;
+}
+
+void
+vm_install_kernel (page_table_t *table)
+{
     // install kernel text
     vm_install_id_map (table, (page_t *) KERNEL_TEXT_BASE, N_PAGES(KERNEL_TEXT_END - KERNEL_TEXT_BASE), PTE_RX_PERM);
 
@@ -56,11 +71,6 @@ vm_init_early ()
     // install kernel bss
     vm_install_id_map (table, (page_t *) KERNEL_BSS_BASE, N_PAGES(KERNEL_BSS_END - KERNEL_BSS_BASE), PTE_RW_PERM);
 
-    // set up ID map for initial kernel stack
-    uint8_t n_stack_pages = STACK_SIZE / PAGE_SIZE;
-    page_t *stack_pages = ((page_t *) PAGE_DOWN(FREE_MEM_END)) - n_stack_pages;
-    vm_install_id_map (table, stack_pages, n_stack_pages, PTE_RWX_PERM);
-
     // set up ID map for bitmap metadata
     vm_install_id_map (table, (page_t *) FREE_MEM_BASE, N_PALLOC_BITMAP_PAGES, PTE_RWX_PERM);
 
@@ -68,10 +78,6 @@ vm_init_early ()
     vm_install_page (table, CLINT_BASE, CLINT_BASE, PTE_RWX_PERM);
     vm_install_page (table, UART0_BASE, UART0_BASE, PTE_RWX_PERM);
     vm_install_page (table, TEST_CTRL_ADDR, TEST_CTRL_ADDR, PTE_RWX_PERM);
-
-
-    vm_activate_address_space (table, 0x0);
-    mmu_enabled = true;
 }
 
 void
@@ -87,8 +93,7 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
             uint64_t pte = PPN_TO_PTE_MASK(PADDR_TO_PPN(next_table)) | PTE_V_MASK;
             *pte_p = pte;
 
-            uint64_t rwx_perm = PTE_R_MASK | PTE_W_MASK | PTE_X_MASK | PTE_A_MASK | PTE_D_MASK;
-            vm_install_page(root, next_table, next_table, rwx_perm);
+            vm_install_page(root, next_table, next_table, PTE_RW_PERM);
         }
 
         table = (page_table_t *) (PTE_PPN(*pte_p) << PAGE_OFFSET);
@@ -102,7 +107,6 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
 void
 vm_activate_address_space (page_table_t *root, uint16_t asid)
 {
-    // mmu_enabled = true;
     uint64_t satp = SATP_MODE(0x8) | SATP_ASID(asid) | ((paddr_t) root >> PAGE_OFFSET);
     debug("SATP: 0x%lx\n", satp);
 
