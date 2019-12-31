@@ -30,7 +30,7 @@ vm_init_early ()
 
     // create root page table
     page_table_t *table = (page_table_t *) alloc_page(PALLOC_CLEAR);
-    // vm_install_page (table, (paddr_t) table, (vaddr_t) table, rwx_perm);
+    vm_install_page (table, (paddr_t) table, (vaddr_t) table, rwx_perm);
 
     // set up ID map for kernel pages
     page_t *kernel_pages = (page_t *) KERNEL_TEXT_BASE;
@@ -58,9 +58,8 @@ vm_init_early ()
 void
 vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm)
 {
-    // page_table_t *root = table;
+    page_table_t *root = table;
     for (int i = PT_LEVELS - 1; i > 0; i--) {
-        printf("LEVEL %d, TABLE_ADDR: 0x%lx (0x%lx -> 0x%lx)\n", i, table, phys_page, virt_page);
         uint64_t vpn = VPN_N(virt_page, i);
         pte_t *pte_p = &table->entries[vpn];
         if ((*pte_p & PTE_V_MASK) == 0) {
@@ -68,14 +67,13 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
             uint64_t pte = PPN_TO_PTE_MASK(PADDR_TO_PPN(next_table)) | PTE_V_MASK;
             *pte_p = pte;
 
-            // uint64_t rwx_perm = PTE_R_MASK | PTE_W_MASK | PTE_X_MASK | PTE_A_MASK | PTE_D_MASK;
-            // vm_install_page(root, next_table, next_table, rwx_perm);
+            uint64_t rwx_perm = PTE_R_MASK | PTE_W_MASK | PTE_X_MASK | PTE_A_MASK | PTE_D_MASK;
+            vm_install_page(root, next_table, next_table, rwx_perm);
         }
 
         table = (page_table_t *) (PTE_PPN(*pte_p) << PAGE_OFFSET);
     }
 
-    printf("LEVEL %d, TABLE_ADDR: 0x%lx (0x%lx -> 0x%lx)\n", 0, table, phys_page, virt_page);
     uint64_t vpn = VPN_N(virt_page, 0);
     uint64_t pte = PTE_V_MASK | perm | PPN_TO_PTE_MASK(PADDR_TO_PPN(phys_page));
     table->entries[vpn] = pte;
