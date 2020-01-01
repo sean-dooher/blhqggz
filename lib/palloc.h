@@ -4,8 +4,9 @@
 #include <stddef.h>
 #include "devices/machine.h"
 
-#define PALLOC_CLEAR 0x1
 #define PALLOC_NO_FLAGS 0x0
+#define PALLOC_CLEAR 0x1
+#define PALLOC_VM_INSTALL 0x2
 
 extern uint64_t N_PALLOC_BITMAP_PAGES;
 

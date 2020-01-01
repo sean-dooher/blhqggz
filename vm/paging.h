@@ -39,9 +39,9 @@ extern bool mmu_enabled;
 #define PTE_A_MASK 0x40
 #define PTE_D_MASK 0x80
 #define PTE_RSW_MASK 0x300
-#define PTE_R_PERM (PTE_R_MASK | PTE_A_MASK)
+#define PTE_R_PERM (PTE_R_MASK)
 #define PTE_X_PERM (PTE_X_MASK)
-#define PTE_W_PERM (PTE_W_MASK | PTE_D_MASK)
+#define PTE_W_PERM (PTE_W_MASK)
 #define PTE_RX_PERM (PTE_R_PERM | PTE_X_PERM)
 #define PTE_RW_PERM (PTE_R_PERM | PTE_W_PERM)
 #define PTE_RWX_PERM (PTE_R_PERM | PTE_W_PERM | PTE_X_PERM)
@@ -74,13 +74,19 @@ typedef struct page_table {
 
 
 void vm_init_early (void);
-void vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm);
-void vm_install_kernel (page_table_t *table);
 
-void vm_activate_address_space (page_table_t *root, uint16_t asid);
-page_table_t *vm_get_current_table (void);
+void vm_install_page (page_table_t *root, paddr_t phys_page, vaddr_t virt_page, uint64_t perm);
+void vm_uninstall_page (page_table_t *root, vaddr_t virt_page);
+void vm_access_page (page_table_t *root, vaddr_t virt_addr, bool dirty);
+
+void vm_install_kernel (page_table_t *root);
+
+
 paddr_t vm_translate (page_table_t *root, vaddr_t virt_addr);
 pte_t *vm_get_pte (page_table_t *root, vaddr_t virt_addr, int level);
+
+page_table_t *vm_get_current_table (void);
+void vm_activate_address_space (page_table_t *root, uint16_t asid);
 
 static inline void
 vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t perm)
