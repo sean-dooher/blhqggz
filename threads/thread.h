@@ -46,7 +46,7 @@ static const uint8_t regfile_n[32] = {
 };
 
 typedef struct regfile {
-    uint64_t reg[16];
+    uint64_t reg[32];
     uint64_t pc;
 } regfile_t;
 
@@ -66,11 +66,13 @@ typedef struct thread
     uint32_t magic;
 } thread_t;
 
-typedef void (*thread_func_t) (uint64_t *args, int nargs);
+typedef void (*thread_func_t) (void **args, int nargs);
 
 void      thread_init    (void);
 thread_t *thread_current (void);
 
-thread_t *thread_create  (char *name, thread_func_t f, uint64_t *args, int nargs);
+thread_t *thread_create  (char *name, thread_func_t f, void **args, int nargs);
+void      thread_exit    (void);
 
 void      thread_yield   (void);
+void      thread_switch  (thread_t *thread);

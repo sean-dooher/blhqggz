@@ -4,6 +4,7 @@
 
 #include "devices/serial.h"
 #include "threads/interrupts.h"
+#include "threads/thread.h"
 #include "devices/timer.h"
 #include "devices/machine.h"
 #include "vm/paging.h"
@@ -13,4 +14,5 @@ main()
 {
     vm_init_early ();
     serial_init ();
+    thread_init ();
 }

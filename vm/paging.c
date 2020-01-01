@@ -100,9 +100,8 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
         if ((*pte_p & PTE_V_MASK) == 0) {
             paddr_t next_table = (paddr_t) alloc_page(PALLOC_CLEAR);
             uint64_t pte = PPN_TO_PTE_MASK(PADDR_TO_PPN(next_table)) | PTE_V_MASK;
-            *pte_p = pte;
-
-            vm_install_page(root, next_table, next_table, PTE_RW_PERM);
+            vm_update_pte (pte_p, pte);
+            vm_install_page (root, next_table, next_table, PTE_RW_PERM);
         }
 
         table = (page_table_t *) (PTE_PPN(*pte_p) << PAGE_OFFSET);
@@ -118,7 +117,7 @@ vm_uninstall_page (page_table_t *root, vaddr_t virt_page)
 {
     pte_t *pte_p = vm_get_pte (root, virt_page, 2);
     if (pte_p != NULL) {
-        *pte_p &= ~PTE_V_MASK;
+        vm_update_pte (pte_p, *pte_p & ~PTE_V_MASK);
     }
 }
 

@@ -1,6 +1,8 @@
-EXPORT_THREADS_HEADERS = interrupts.h
+EXPORT_THREADS_HEADERS = interrupts.h \
+						 thread.h
 
-EXPORT_THREADS_C_SRCS = interrupts.c
+EXPORT_THREADS_C_SRCS = interrupts.c \
+						thread.c
 
 EXPORT_THREADS_S_SRCS = start.S \
 						exceptions.S

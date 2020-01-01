@@ -66,34 +66,34 @@ supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, ui
     switch (scause) {
         case INST_PAGE_FAULT:
         {
-            pte_t pte = *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
-            if (pte & PTE_V_MASK) {
+            pte_t *pte_p = vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
+            if (pte_p != NULL && *pte_p & PTE_V_MASK) {
                 vm_access_page (vm_get_current_table (), stval, false);
                 return;
             }
-            printf ("Page fault accessing instruction at: 0x%p (PTE: 0x%lx)\n", stval, pte);
+            printf ("Page fault accessing instruction at: 0x%p\n", stval);
             while (true);
             break;
         }
         case LOAD_PAGE_FAULT:
         {
-            pte_t pte = *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
-            if (pte & PTE_V_MASK) {
+            pte_t *pte_p = vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
+            if (pte_p != NULL && *pte_p & PTE_V_MASK) {
                 vm_access_page (vm_get_current_table (), stval, false);
                 return;
             }
-            printf ("Page fault with data load at: 0x%p (PTE: 0x%lx)\n", stval, pte);
+            printf ("Page fault with data load at: 0x%p\n", stval);
             while (true);
             break;
         }
         case STORE_PAGE_FAULT:
         {
-            pte_t pte = *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
-            if (pte & PTE_V_MASK) {
+            pte_t *pte_p = vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1);
+            if (pte_p != NULL && *pte_p & PTE_V_MASK) {
                 vm_access_page (vm_get_current_table (), stval, true);
                 return;
             }
-            printf ("Page fault with data store at: 0x%p (PTE: 0x%lx)\n", stval, pte);
+            printf ("Page fault with data store at: 0x%p\n", stval);
             while (true);
             break;
         }
