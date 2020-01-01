@@ -18,8 +18,17 @@ void test_basic_vm ()
     vm_install_page (vm_get_current_table(), (paddr_t) phys_page, (vaddr_t) virt_page2, PTE_R_PERM);
 
     for (int i = 0; i < sizeof(virt_page1->data); i++) {
-        virt_page1->data[i] = i % 255;
+        virt_page1->data[i] = 0xBA;
         assert (virt_page1->data[i] == virt_page2->data[i], "Change in one page should be reflected in other");
+    }
+
+    vm_uninstall_page (vm_get_current_table(), (vaddr_t) virt_page2);
+
+    page_t *new_phys_page = alloc_page (PALLOC_CLEAR);
+    vm_install_page (vm_get_current_table(), (paddr_t) new_phys_page, (vaddr_t) virt_page2, PTE_RW_PERM);
+
+    for (int i = 0; i < sizeof(virt_page1->data); i++) {
+        assert (virt_page1->data[i] != virt_page2->data[i], "Change in one page should no longer be reflected in other");
     }
 }
 

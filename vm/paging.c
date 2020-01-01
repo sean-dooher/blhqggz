@@ -110,7 +110,7 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
 
     uint64_t vpn = VPN_N(virt_page, 0);
     uint64_t pte = PTE_V_MASK | perm | PPN_TO_PTE_MASK(PADDR_TO_PPN(phys_page));
-    table->entries[vpn] = pte;
+    vm_update_pte (&table->entries[vpn], pte);
 }
 
 void
@@ -157,6 +157,17 @@ vm_get_pte (page_table_t *root, vaddr_t virt_addr, int level)
     } else {
         paddr_t paddr = PTE_PPN(pte) << PAGE_OFFSET;
         return vm_get_pte ((page_table_t *) paddr, virt_addr, level - 1);
+    }
+}
+
+void
+vm_update_pte (pte_t *pte_p, pte_t pte)
+{
+    *pte_p = pte;
+    if (mmu_enabled) { 
+        asm volatile(
+            "sfence.vma %0, x0" : : "r" (pte_p)
+        );
     }
 }
 

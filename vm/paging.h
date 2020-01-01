@@ -84,6 +84,7 @@ void vm_install_kernel (page_table_t *root);
 
 paddr_t vm_translate (page_table_t *root, vaddr_t virt_addr);
 pte_t *vm_get_pte (page_table_t *root, vaddr_t virt_addr, int level);
+void vm_update_pte (pte_t *pte_p, pte_t pte);
 
 page_table_t *vm_get_current_table (void);
 void vm_activate_address_space (page_table_t *root, uint16_t asid);
