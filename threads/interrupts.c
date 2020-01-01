@@ -66,19 +66,19 @@ supervisor_interrupt_handler(uint64_t *sp, uint64_t scause, uint64_t sstatus, ui
     switch (scause) {
         case INST_PAGE_FAULT:
         {
-            printf ("Page fault accessing instruction at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            printf ("Page fault accessing instruction at: 0x%p (PTE: 0x%lx)\n", stval, *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1));
             while (true);
             break;
         }
         case LOAD_PAGE_FAULT:
         {
-            printf ("Page fault with data load at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            printf ("Page fault with data load at: 0x%p (PTE: 0x%lx)\n", stval, *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1));
             while (true);
             break;
         }
         case STORE_PAGE_FAULT:
         {
-            printf ("Page fault with data store at: 0x%p (PTE: 0x%lx)\n", stval, *vm_walk_table(vm_get_current_table(), stval, PT_LEVELS - 1));
+            printf ("Page fault with data store at: 0x%p (PTE: 0x%lx)\n", stval, *vm_get_pte(vm_get_current_table(), stval, PT_LEVELS - 1));
             break;
         }
         default:

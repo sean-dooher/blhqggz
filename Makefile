@@ -23,7 +23,8 @@ PLATFORM_DIR = platform/
 PLATFORM ?= virt
 
 # Tool Options
-export LD_FLAGS = -T link.ld -nostartfiles -nostdlib -nostdinc -static
+export LD_FLAGS = -nostartfiles -nostdlib -nostdinc -static
+export LD_SCRIPT = -T link.ld
 export CFLAGS = -I$(LIB_DIR) -I. -Wall -Werror -O0 -nostdinc -nostdlib -nostartfiles -mcmodel=medany -ffreestanding -lgcc -g
 export QEMU_FLAGS = -M $(PLATFORM) -cpu rv64gcsu-v1.10.0 -display none -serial stdio
 
@@ -81,7 +82,7 @@ $(KERNEL_BASE): $(OBJS) $(HEADERS)
 
 $(KERNEL): $(KERNEL_BASE) $(OBJ_DIR)/main.o
 	@echo "LD $(KERNEL)"
-	@$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(KERNEL)
+	@$(LD) $(LD_FLAGS) $(LD_SCRIPT) $(KERNEL_BASE) $(OBJ_DIR)/main.o -o $(KERNEL)
 
 $(BIN_DIR)/kernel.img: $(KERNEL)
 	@$(OBJCOPY) -O binary $(KERNEL) $(BIN_DIR)/kernel.img

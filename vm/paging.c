@@ -37,6 +37,13 @@ void
 vm_init_early () 
 {
     mmu_enabled = false;
+
+    debug ("KERNEL TEXT: 0x%lx to 0x%lx (pages: %d)\n", KERNEL_TEXT_BASE, KERNEL_TEXT_END, N_PAGES(KERNEL_TEXT_END - KERNEL_TEXT_BASE));
+    debug ("KERNEL RODATA: 0x%lx to 0x%lx (pages: %d)\n", KERNEL_RODATA_BASE, KERNEL_RODATA_END, N_PAGES(KERNEL_RODATA_END - KERNEL_RODATA_BASE));
+    debug ("KERNEL DATA: 0x%lx to 0x%lx (pages: %d)\n", KERNEL_DATA_BASE, KERNEL_DATA_END, N_PAGES(KERNEL_DATA_END - KERNEL_DATA_BASE));
+    debug ("KERNEL BSS: 0x%lx to 0x%lx (pages: %d)\n", KERNEL_BSS_BASE, KERNEL_BSS_END, N_PAGES(KERNEL_BSS_END - KERNEL_BSS_BASE));
+    debug ("KERNEL FREE_MEM: 0x%lx to 0x%lx (pages: %d)\n", FREE_MEM_BASE, FREE_MEM_END, N_PAGES(FREE_MEM_END - FREE_MEM_BASE));
+
     N_FREE_PAGES = N_PAGES (FREE_MEM_END - FREE_MEM_BASE);
     palloc_init ();
 
@@ -115,21 +122,30 @@ vm_activate_address_space (page_table_t *root, uint16_t asid)
 }
 
 paddr_t
-vm_walk_table (page_table_t *root, vaddr_t virt_addr, int level)
+vm_translate (page_table_t *root, vaddr_t virt_addr)
+{
+    pte_t *pte_p = vm_get_pte (root, virt_addr, 2);
+    if (pte_p != NULL) {
+        return PTE_PPN(*pte_p) << PAGE_OFFSET;
+    }
+    return (paddr_t) 0;
+}
+
+pte_t *
+vm_get_pte (page_table_t *root, vaddr_t virt_addr, int level)
 {
     uint64_t vpn = VPN_N(virt_addr, level);
     pte_t pte = root->entries[vpn];
 
     if ((pte & PTE_V_MASK) == 0) {
-        return (paddr_t) NULL;
+        return NULL;
     }
 
-    paddr_t paddr = PTE_PPN(pte) << PAGE_OFFSET;
-
     if (level == 0) {
-        return paddr | ADDR_OFFSET(virt_addr);
+        return &root->entries[vpn];
     } else {
-        return vm_walk_table ((page_table_t *) paddr, virt_addr, level - 1);
+        paddr_t paddr = PTE_PPN(pte) << PAGE_OFFSET;
+        return vm_get_pte ((page_table_t *) paddr, virt_addr, level - 1);
     }
 }
 

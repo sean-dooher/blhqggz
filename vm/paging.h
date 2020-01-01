@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <palloc.h>
 #include "devices/machine.h"
 
 extern const void *KERNEL_TEXT_BASE;
@@ -78,6 +79,8 @@ void vm_install_kernel (page_table_t *table);
 
 void vm_activate_address_space (page_table_t *root, uint16_t asid);
 page_table_t *vm_get_current_table (void);
+paddr_t vm_translate (page_table_t *root, vaddr_t virt_addr);
+pte_t *vm_get_pte (page_table_t *root, vaddr_t virt_addr, int level);
 
 static inline void
 vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t perm)

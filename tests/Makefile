@@ -36,7 +36,7 @@ $(TEST_OBJ_DIR)/%.o: $(TEST_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TEST_KERNEL_DIR)/%.elf: $(TEST_LIB_OBJS) $(TEST_OBJS) $(KERNEL_BASE)
-	$(LD) $(LD_FLAGS) $(KERNEL_BASE) $(TEST_LIB_OBJS) $(TEST_OBJ_DIR)/$(notdir $(patsubst %.elf, %.o, $@)) -o $@
+	$(LD) $(LD_FLAGS) $(LD_SCRIPT) $(KERNEL_BASE) $(TEST_LIB_OBJS) $(TEST_OBJ_DIR)/$(notdir $(patsubst %.elf, %.o, $@)) -o $@
 
 run: $(TEST_KERNELS)
 	$(TEST_DIR)/run-tests.sh

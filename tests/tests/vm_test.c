@@ -15,7 +15,7 @@ void test_basic_vm ()
     page_t *virt_page2 = (page_t *) 0x600000000;
 
     vm_install_page (vm_get_current_table(), (paddr_t) phys_page, (vaddr_t) virt_page1, PTE_RW_PERM);
-    vm_install_page (vm_get_current_table(), (paddr_t) phys_page, (vaddr_t) virt_page2, PTE_RW_PERM);
+    vm_install_page (vm_get_current_table(), (paddr_t) phys_page, (vaddr_t) virt_page2, PTE_R_PERM);
 
     for (int i = 0; i < sizeof(virt_page1->data); i++) {
         virt_page1->data[i] = i % 255;
