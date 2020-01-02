@@ -15,4 +15,7 @@ main()
     vm_init_early ();
     serial_init ();
     thread_init ();
+
+    thread_t *curr_thread = thread_current ();
+    printf ("Current Thread: %s (%d)\n", curr_thread->name, curr_thread->id);
 }

@@ -27,8 +27,8 @@ test_time_period(uint16_t max_count, uint64_t period_ms)
     uint64_t curr_time = time_read();
     uint64_t time_diff = (curr_time - start_time);
     uint64_t expected_time = count * period_ms * MS_TO_TIMER;
-    uint64_t expected_time_max = expected_time * 1.1;
-    uint64_t expected_time_min = expected_time * 0.9;
+    uint64_t expected_time_max = expected_time * 1.2;
+    uint64_t expected_time_min = expected_time * 0.8;
 
     assert(time_diff < expected_time_max, "Expected time < %d ticks was: %d ticks", expected_time_max, time_diff);
     assert(time_diff >= expected_time_min, "Expected time >= %d ticks was: %d ticks", expected_time_min, time_diff);

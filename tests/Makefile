@@ -6,7 +6,8 @@ export TEST_LIST =  string_unit \
 					bootable \
 					bitmap_test \
 					vm_test \
-					vm_test_create_pt
+					vm_test_create_pt \
+					thread_init_test
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))

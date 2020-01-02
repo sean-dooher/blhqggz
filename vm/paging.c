@@ -29,6 +29,7 @@ const void *KERNEL_BSS_BASE = &__bss_base;
 const void *KERNEL_BSS_END = &__bss_end;
 const void *FREE_MEM_BASE = &_free_mem_base;
 const void *FREE_MEM_END = &_free_mem_end;
+const void *INIT_STACK_PAGE = &_free_mem_end - PAGE_SIZE;
 uint32_t N_FREE_PAGES;
 
 bool mmu_enabled;

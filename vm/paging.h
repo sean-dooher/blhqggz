@@ -1,23 +1,12 @@
 #pragma once
 
+#ifndef __ASSEMBLER__
 #include <stdint.h>
 #include <stdbool.h>
 #include <palloc.h>
+#endif
+
 #include "devices/machine.h"
-
-extern const void *KERNEL_TEXT_BASE;
-extern const void *KERNEL_TEXT_END;
-extern const void *KERNEL_RODATA_BASE;
-extern const void *KERNEL_RODATA_END;
-extern const void *KERNEL_DATA_BASE;
-extern const void *KERNEL_DATA_END;
-extern const void *KERNEL_BSS_BASE;
-extern const void *KERNEL_BSS_END;
-extern const void *FREE_MEM_BASE;
-extern const void *FREE_MEM_END;
-extern uint32_t N_FREE_PAGES;
-
-extern bool mmu_enabled;
 
 #define N_PAGES(SIZE) (((SIZE) + (PAGE_SIZE - 1)) / PAGE_SIZE)
 
@@ -65,6 +54,22 @@ extern bool mmu_enabled;
 #define SATP_ASID(asid) (((uint64_t) asid) << 44)
 #define SATP_PPN_MASK 0xfffffffffff
 
+#ifndef __ASSEMBLER__
+extern const void *KERNEL_TEXT_BASE;
+extern const void *KERNEL_TEXT_END;
+extern const void *KERNEL_RODATA_BASE;
+extern const void *KERNEL_RODATA_END;
+extern const void *KERNEL_DATA_BASE;
+extern const void *KERNEL_DATA_END;
+extern const void *KERNEL_BSS_BASE;
+extern const void *KERNEL_BSS_END;
+extern const void *FREE_MEM_BASE;
+extern const void *FREE_MEM_END;
+extern const void *INIT_STACK_PAGE;
+extern uint32_t N_FREE_PAGES;
+
+extern bool mmu_enabled;
+
 typedef uint64_t pte_t;
 typedef uint64_t paddr_t;
 typedef uint64_t vaddr_t;
@@ -98,3 +103,4 @@ vm_install_id_map (page_table_t *table, page_t *base, size_t n_pages, uint64_t p
         vm_install_page (table, (paddr_t) &base[i], (vaddr_t) &base[i], perm);
     }
 }
+#endif

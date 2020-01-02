@@ -1,6 +1,7 @@
 .section .text.init
 
 #include "devices/machine.h"
+#include "vm/paging.h"
 
 .include "asm/switch.s"
 
@@ -25,6 +26,8 @@ _enable_floats:
 _stack_setup:
     # set up init_stack pointer
     la sp, _free_mem_end
+    jal ra, thread_get_thread_size
+    sub sp, sp, a0
 
 _smode_interrupt_delegation:
     # defer all supervisor interrupts to S MODE
