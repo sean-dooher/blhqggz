@@ -90,6 +90,28 @@ vm_install_kernel (page_table_t *root)
 }
 
 void
+vm_uninstall_pagetable_helper (page_table_t *root, int level)
+{
+    if (level > 0) {
+        for (int i = 0; i < N_PT_ENTRIES; i++) {
+            page_table_t *table = (page_table_t *) (PTE_PPN(root->entries[i]) << PAGE_OFFSET);
+            if (table != NULL) {
+                vm_uninstall_pagetable_helper (table, level - 1);
+            }
+        }
+    }
+
+    vm_uninstall_page (vm_get_current_table (), (vaddr_t) root);
+}
+
+/* Unmaps the entire page table from the current address space */
+void
+vm_uninstall_pagetable (page_table_t *root)
+{
+    vm_uninstall_pagetable_helper (root, PT_LEVELS - 1);
+}
+
+void
 vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint64_t perm)
 {
     debug("PHYS: 0x%lx to VIRT: 0x%lx\n", phys_page, virt_page);
@@ -98,7 +120,7 @@ vm_install_page (page_table_t *table, paddr_t phys_page, vaddr_t virt_page, uint
         uint64_t vpn = VPN_N(virt_page, i);
         pte_t *pte_p = &table->entries[vpn];
         if ((*pte_p & PTE_V_MASK) == 0) {
-            paddr_t next_table = (paddr_t) alloc_page(PALLOC_CLEAR);
+            paddr_t next_table = (paddr_t) alloc_page(PALLOC_CLEAR | PALLOC_VM_INSTALL);
             uint64_t pte = PPN_TO_PTE_MASK(PADDR_TO_PPN(next_table)) | PTE_V_MASK;
             vm_update_pte (pte_p, pte);
             vm_install_page (root, next_table, next_table, PTE_RW_PERM);
@@ -134,7 +156,7 @@ vm_activate_address_space (page_table_t *root, uint16_t asid)
 paddr_t
 vm_translate (page_table_t *root, vaddr_t virt_addr)
 {
-    pte_t *pte_p = vm_get_pte (root, virt_addr, 2);
+    pte_t *pte_p = vm_get_pte (root, virt_addr, PT_LEVELS - 1);
     if (pte_p != NULL) {
         return PTE_PPN(*pte_p) << PAGE_OFFSET;
     }
@@ -173,7 +195,7 @@ vm_update_pte (pte_t *pte_p, pte_t pte)
 void
 vm_access_page (page_table_t *root, vaddr_t virt_addr, bool dirty)
 {
-    pte_t *pte_p = vm_get_pte (root, virt_addr, 2);
+    pte_t *pte_p = vm_get_pte (root, virt_addr, PT_LEVELS - 1);
     if (pte_p != NULL) {
         *vm_get_pte (root, virt_addr, 2) |= PTE_A_MASK | (PTE_D_MASK * dirty);
     }

@@ -5,7 +5,8 @@ export TEST_LIST =  string_unit \
 					timer_test \
 					bootable \
 					bitmap_test \
-					vm_test
+					vm_test \
+					vm_test_create_pt
 
 TEST_DIR = tests
 TEST_SRCS = $(addprefix $(TEST_DIR)/, $(addsuffix .c, $(TEST_LIST)))

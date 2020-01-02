@@ -59,6 +59,7 @@ extern bool mmu_enabled;
 #define PTE_PERM(pte) ((pte & (PTE_R_MASK | PTE_W_MASK | PTE_X_MASK)) >> PTE_RWX_OFFSET)
 
 #define PT_LEVELS 3
+#define N_PT_ENTRIES (PAGE_SIZE / sizeof(pte_t))
 
 #define SATP_MODE(mode) (((uint64_t) mode) << 60)
 #define SATP_ASID(asid) (((uint64_t) asid) << 44)
@@ -69,7 +70,7 @@ typedef uint64_t paddr_t;
 typedef uint64_t vaddr_t;
 
 typedef struct page_table {
-    pte_t entries[PAGE_SIZE / sizeof(pte_t)];
+    pte_t entries[N_PT_ENTRIES];
 } page_table_t;
 
 
@@ -80,6 +81,7 @@ void vm_uninstall_page (page_table_t *root, vaddr_t virt_page);
 void vm_access_page (page_table_t *root, vaddr_t virt_addr, bool dirty);
 
 void vm_install_kernel (page_table_t *root);
+void vm_uninstall_pagetable (page_table_t *root);
 
 
 paddr_t vm_translate (page_table_t *root, vaddr_t virt_addr);
